@@ -2,7 +2,7 @@
 name: "Suggestion"
 description: "Request a new feature!"
 title: "[SUGGESTION]: "
-labels: ["Bug Report"]
+labels: ["Suggestion"]
 
 body:
   - type: checkboxes
