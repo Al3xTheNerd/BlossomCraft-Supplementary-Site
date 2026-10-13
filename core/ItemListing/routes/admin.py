@@ -138,7 +138,7 @@ def ManageItem(itemID):
                         if platform == "win32":
                             loc = f"core/_Shared/static/images/Icons/"
                         else:
-                            loc = f"/home/blossomcraft/core/_Shared/static/images/Icons/"
+                            loc = f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Icons/"
                         
                         db.session.commit()
                         file.save(os.path.join(loc, filename))
