@@ -14,7 +14,7 @@ from atn import secret_key
 
 app = Flask(
     __name__, 
-    instance_path = os.path.abspath(__file__),
+    instance_path = os.path.dirname(os.path.abspath(__file__)),
     static_folder="_Shared/static",
     static_url_path="/static")
 
