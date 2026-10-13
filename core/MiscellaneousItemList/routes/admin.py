@@ -13,7 +13,7 @@ from core.utils import intParser
 from core.extensions import db
 from core.MiscellaneousItemList.models import MiscellaneousItem, MiscellaneousGroup
 from core.MiscellaneousItemList.utils import currentItemsByGroup, currentGroupData
-from core.config import validMiscGroupTypes, server_folder_name
+from core.config import validMiscGroupTypes
 
 @bp.route('/admin/additem', methods=['POST', 'GET']) # type: ignore
 @has_permission("view_add_misc_item")
@@ -139,7 +139,7 @@ def ManageMiscItem(itemID):
                         if platform == "win32":
                             loc = f"core/_Shared/static/images/Misc_Icons/"
                         else:
-                            loc = f"/home/blossomcraft/{server_folder_name}/core/_Shared/static/images/Misc_Icons/"
+                            loc = f"/home/blossomcraft/core/_Shared/static/images/Misc_Icons/"
                         
                         db.session.commit()
                         file.save(os.path.join(loc, filename))

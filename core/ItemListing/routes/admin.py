@@ -15,7 +15,6 @@ from core.ItemListing.models import Crate, Item, Set
 from core.ItemListing.utils import verifyCrate, currentItemsByCrate, currentCrateData
 from core.MiscellaneousItemList.models import MiscellaneousGroup
 from core.extensions import db
-from core.config import server_folder_name
 
 
 @bp.route('/admin/additem', methods=['POST', 'GET']) # type: ignore
@@ -139,7 +138,7 @@ def ManageItem(itemID):
                         if platform == "win32":
                             loc = f"core/_Shared/static/images/Icons/"
                         else:
-                            loc = f"/home/blossomcraft/{server_folder_name}/core/_Shared/static/images/Icons/"
+                            loc = f"/home/blossomcraft/core/_Shared/static/images/Icons/"
                         
                         db.session.commit()
                         file.save(os.path.join(loc, filename))
