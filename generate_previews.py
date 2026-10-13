@@ -53,7 +53,7 @@ miscItems = pullMiscItems()
 if platform == "win32":
     loc = f"core/static/images/"
 else:
-    loc = f"/home/blossomcraft/BlossomCraft/core/static/images/"
+    loc = f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/"
 desc_file_list = [p.name for p in Path(f"{loc}Descriptions").iterdir() if p.is_file()]
 misc_file_list = [p.name for p in Path(f"{loc}Misc_Descriptions").iterdir() if p.is_file()]
 if items:
