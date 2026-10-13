@@ -1,0 +1,17 @@
+{% if Crate %}
+    {% set Title = Crate.CrateName ~ " Crate" %}
+    {% set Description = "All items in " ~ Crate.CrateName ~ " Crate." %}
+{% elif Tag and Category %}
+    {% set Title = Category ~ "-" ~ Tag ~ " Tag" %}
+    {% set Description = "All items with the " ~ Category ~ "-" ~ Tag ~ " Tag" %}
+{% else %}
+    {% set Title = "Generic Item List" %}
+    {% set Description = "Generic Item List" %}
+
+{% endif %}
+{% set UseSEO = true %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+    {% include 'itemDisplay.html' %}
+{% endblock %}

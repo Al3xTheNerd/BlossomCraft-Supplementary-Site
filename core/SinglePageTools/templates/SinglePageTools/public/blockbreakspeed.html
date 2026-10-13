@@ -1,0 +1,373 @@
+{% set Title = "Block Break Speed Calculator" %}
+{% set UseSEO = true %}
+{% set Description = "Calculate the speed of breaking blocks with various custom items and effects." %}
+{% set UseTracker = true %}
+{% extends "SinglePageTools/IntegratedLayout.html" %}
+{% block content %}
+<style>
+    .input-group-text,
+    .form-select {
+        font-size: 16px;
+    }
+
+    div.input-group input.form-control {
+        font-size: 16px;
+    }
+</style>
+<span id="debug"></span>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Minecraft Block Break Speed Calculator</h3>
+            <div class="card-body">
+                <p class="card-text">This tool is used to calculate how fast different tools will break a block.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Item Selection</h3>
+            <div class="card-body weird-margins" id="colorsContainer">
+                <div class="input-group">
+                    <label class="input-group-text">Tool Type</label>
+                    <select class="form-select" id="toolType" onchange="updateToolOptions()">
+                        <option value="Pickaxe">Pickaxe</option>
+                        <option value="Axe">Axe</option>
+                        <option value="Hoe">Hoe</option>
+                        <option value="Shovel">Shovel</option>
+                        <option value="Shears">Shears</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-group-text">Tool</label>
+                    <select class="form-select" id="currentTool" onchange="updatePlaceholders()">
+                        <option value="" selected>None</option>
+                        <option value="Pickaxe">Pickaxe</option>
+                        <option value="Axe">Axe</option>
+                        <option value="Hoe">Hoe</option>
+                        <option value="Shovel">Shovel</option>
+                        <option value="Shears">Shears</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Effects</h3>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <label for="hasteRange" class="form-label">Haste Level
+                        <code><span id="currentHasteLevel">0</span></code></label>
+                    <input type="range" class="form-range" min="0" max="5" step="1" id="hasteLevel" value="0"
+                        oninput="updatePlaceholders()">
+                </div>
+                <div class="input-group mb-3">
+                    <label for="conduitRange" class="form-label">Conduit Power Level
+                        <code><span id="currentConduitLevel">0</span></code></label>
+                    <input type="range" class="form-range" min="0" max="5" step="1" id="conduitLevel" value="0"
+                        oninput="updatePlaceholders()">
+                </div>
+                <div class="input-group mb-3">
+                    <label for="fatigueRange" class="form-label">Mining Fatigue Level
+                        <code><span id="currentFatigueLevel">0</span></code></label>
+                    <input type="range" class="form-range" min="0" max="3" step="1" id="fatigueLevel" value="0"
+                        oninput="updatePlaceholders()">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Settings</h3>
+            <div class="card-body">
+                <input type="checkbox" class="btn-check left-border-reset" id="onBedrock" autocomplete="off"
+                    onchange="updatePlaceholders()">
+                <label class="btn btn-outline-primary" for="onBedrock">Playing Bedrock</label>
+                <input type="checkbox" class="btn-check left-border-reset" id="inWater" autocomplete="off"
+                    onchange="updatePlaceholders()">
+                <label class="btn btn-outline-primary" for="inWater">Head in Water</label>
+                <input type="checkbox" class="btn-check left-border-reset" id="onGround" autocomplete="off" checked
+                    onchange="updatePlaceholders()">
+                <label class="btn btn-outline-primary" for="onGround">Feet on Ground</label>
+                <input type="checkbox" class="btn-check left-border-reset" id="aquaAffinity" autocomplete="off"
+                    onchange="updatePlaceholders()">
+                <label class="btn btn-outline-primary" for="aquaAffinity">Aqua Affinity</label>
+                <p class="card-text mt-3">Efficiency: <code id=currentEfficiency>0</code></p>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    {% for blockType, data in blocksToCalculate.items() %}
+    <div class="col-xs-12 col-sm-12 col-md-6 fancyShit" id="{{ blockType }}">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">{{ blockType}} Blocks</h3>
+            <div class="card-body">
+                <div class="table-responsive">
+                <table class="table text-white">
+                    <thead>
+                        <tr>
+                            <th scope="col">Block</th>
+                            <th scope="col">Hardness</th>
+                            <th scope="col">Seconds</th>
+                            <th scope="col">Insta-mine?</th>
+                        </tr>
+                    </thead>
+                    <tbody id="{{ blockType }}">
+                        {% for block, value in data.items() %}
+                        <tr>
+                            <th scope="row">{{ block }}</th>
+                            <td id='hardness'>{{ value }}</td>
+                            <td id='seconds'>0</td>
+                            <td id='insta'>no</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<script>
+    // Load in item list from database
+    let sortedItems = {{ itemList | tojson }};
+    let fullList = {{ fullList | tojson }};
+    // Get all of the needed document pieces
+    selectedToolType = document.getElementById("toolType");
+    selectedTool = document.getElementById("currentTool");
+    hasteLevel = document.getElementById("hasteLevel");
+    conduitLevel = document.getElementById("conduitLevel");
+    fatigueLevel = document.getElementById("fatigueLevel");
+    onBedrock = document.getElementById("onBedrock");
+    inWater = document.getElementById("inWater");
+    onGround = document.getElementById("onGround");
+    aquaAffinity = document.getElementById("aquaAffinity");
+
+    allTableBodies = document.getElementsByTagName('tbody');
+    // Get placeholders for levels
+    currentHasteLevel = document.getElementById("currentHasteLevel");
+    currentConduitLevel = document.getElementById("currentConduitLevel");
+    currentFatigueLevel = document.getElementById("currentFatigueLevel");
+    columns = document.getElementsByClassName("fancyShit")
+    activeEfficiency = 0;
+    activeSubmerged = 0;
+    activeSpeed = 0;
+    debugSpot = document.getElementById("debug")
+
+    // Get the haste, conduit power, and mining fatigue placeholders
+    function updatePlaceholders() {
+        currentHasteLevel.innerText = hasteLevel.value;
+        currentConduitLevel.innerText = conduitLevel.value;
+        currentFatigueLevel.innerText = fatigueLevel.value;
+
+        item = fullList.filter(item => item.name === selectedTool.value)
+        activeEfficiency = item[0].efficiency
+        activeSubmerged = item[0].submerged_mining_speed
+        document.getElementById("currentEfficiency").innerHTML = activeEfficiency
+        activeSpeed = item[0].speed
+
+        for (let col = 0; col < columns.length; col++) {
+            if (columns[col].id != selectedToolType.value) {
+                columns[col].classList.add("d-none")
+            } else {
+                columns[col].classList.remove("d-none")
+            }
+        }
+
+        recalculateAllTimes()
+    }
+
+    function updateToolOptions() {
+        ToolType = selectedToolType.value;
+        selectedTool.innerHTML = ""
+        if (ToolType == "all") {
+            listToUse = fullList
+        } else {
+            listToUse = sortedItems[ToolType]
+        }
+        for (let i = 0; i < listToUse.length; i++) {
+            let item = listToUse[i]["name"]
+            opt = document.createElement('option')
+            opt.innerHTML = item
+            selectedTool.appendChild(opt)
+        }
+        updatePlaceholders()
+    }
+
+    function calculateMiningSpeed({
+        toolSpeed,
+        toolType,
+        blockTool,
+        blockHardness,
+        isBedrockEdition = false,
+        efficiencyLevelEnchantment = 0,
+        hasteEffect = 0,
+        conduitPowerEffect = 0,
+        miningFatigueEffect = 0,
+        inWater = false,
+        onGround = true,
+        submergedMiningSpeedAttributeModifier = 0.0,
+        aquaAffinityEnchantment = false,
+        blockBreakSpeedAttribute = 1
+    }) {
+        let speedMultiplier;
+
+        if (isBedrockEdition) {
+            // Bedrock logic
+            if (toolType === blockTool) {
+                speedMultiplier = toolSpeed;
+                if (blockHardness === -1) {
+                    speedMultiplier = 1;
+                } else {
+                    if (efficiencyLevelEnchantment > 0) {
+                        speedMultiplier += (efficiencyLevelEnchantment ** 2) + 1;
+                    }
+                }
+            } else {
+                speedMultiplier = 1;
+            }
+        } else {
+            // Java logic
+            speedMultiplier = toolSpeed;
+            
+            if (speedMultiplier > 1 && efficiencyLevelEnchantment > 0) {
+                speedMultiplier += ((efficiencyLevelEnchantment ** 2) + 1);
+                
+            }
+        }
+        
+        // Apply haste or conduit power
+        if (hasteEffect || conduitPowerEffect) {
+            speedMultiplier *= (0.2 * Math.max(hasteEffect, conduitPowerEffect)) + 1;
+        }
+        // Apply mining fatigue
+        if (miningFatigueEffect > 0) {
+            if (isBedrockEdition) {
+                speedMultiplier *= (0.3 ** miningFatigueEffect);
+            } else {
+                let miningFatigueMultiplier;
+                switch (Number(miningFatigueEffect)) {
+                    case 1:
+                        miningFatigueMultiplier = 0.3;
+                        break;
+                    case 2:
+                        miningFatigueMultiplier = 0.09;
+                        break;
+                    case 3:
+                        miningFatigueMultiplier = 0.0027;
+                        break;
+                    default:
+                        miningFatigueMultiplier = 0.00081;
+                        break;
+                }
+                speedMultiplier *= miningFatigueMultiplier;
+            }
+        }
+        
+        // Apply Java block break attribute
+        if (!isBedrockEdition) {
+            speedMultiplier *= blockBreakSpeedAttribute;
+        }
+        
+        // Handle water effects
+        if (inWater) {
+            if (!isBedrockEdition) {
+                let submergedSpeed = aquaAffinityEnchantment ? 1 : 0.2;
+                speedMultiplier *= (submergedSpeed + submergedMiningSpeedAttributeModifier);
+            } else {
+                if (!aquaAffinityEnchantment) {
+                    speedMultiplier /= 5;
+                }
+            }
+        }
+        
+        // Flying or not on ground
+        if (!onGround) {
+            speedMultiplier /= 5;
+        }
+
+        let damage = speedMultiplier / blockHardness;
+        // Harvest check
+        if (toolType === blockTool) {
+            damage /= 30;
+        } else {
+            damage /= 100;
+        }
+        // Haste/conduit multipliers on Bedrock
+        if ((hasteEffect || conduitPowerEffect) && isBedrockEdition) {
+            damage *= (1.2 ** Math.max(hasteEffect, conduitPowerEffect));
+        }
+
+        // Bedrock mining fatigue final adjustment
+        if (miningFatigueEffect && isBedrockEdition) {
+            damage *= (0.7 ** miningFatigueEffect);
+        }
+        // Calculate ticks and seconds
+        const ticks = Math.ceil(1 / damage);
+        const instamine = damage >= 1;
+        const seconds = instamine ? 0 : ticks / 20;
+
+        return {
+            Ticks: ticks,
+            Seconds: seconds,
+            Instamine: instamine
+        };
+    }
+
+    function recalculateAllTimes() {
+        for (let i = 0; i < allTableBodies.length; i++) {
+            rows = allTableBodies[i].children
+            blockBestOption = allTableBodies[i].id
+            for (let rowNumber = 0; rowNumber < rows.length; rowNumber++) {
+                // grab the block hardness in 2nd row
+                let hardness = parseFloat(rows[rowNumber].children[1].innerText);
+                let seconds = rows[rowNumber][2]
+                let instamine = rows[rowNumber][3]
+                let result = calculateMiningSpeed({
+                    toolSpeed: activeSpeed,
+                    toolType: selectedToolType.value,
+                    blockTool: blockBestOption,
+                    blockHardness: hardness,
+                    isBedrockEdition: onBedrock.checked,
+                    efficiencyLevelEnchantment: activeEfficiency,
+                    hasteEffect: hasteLevel.value,
+                    conduitPowerEffect: conduitLevel.value,
+                    miningFatigueEffect: fatigueLevel.value,
+                    inWater: inWater.checked,
+                    onGround: onGround.checked,
+                    submergedMiningSpeedAttributeModifier: activeSubmerged,
+                    aquaAffinityEnchantment: aquaAffinity.checked,
+                    blockBreakSpeedAttribute: 1
+                })
+                // get the current row
+                let row = rows[rowNumber];
+
+                // get the cell in the 3rd column (index 2)
+                let secondsCell = row.children[2]; // or row.cells[2];
+                let instaCell = row.children[3]
+                // set the text
+                secondsCell.innerText = result.Seconds.toFixed(1);
+                instaCell.innerText = result.Instamine
+
+            }
+            
+        }
+
+
+
+    }
+
+    updateToolOptions()
+</script>
+
+
+
+
+
+{% endblock %}

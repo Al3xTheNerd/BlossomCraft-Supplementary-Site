@@ -1,0 +1,473 @@
+{% set Title = "Add Misc. Item" %}
+{% set UseSEO = false %}
+{% set Description = "Add a new Miscellaneous Item" %}
+{% set UseTracker = false %}
+{% extends "MiscellaneousItemList/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Add Miscellaneous Item</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to add brand new miscellaneous items (such as plushies, or server event items) to the site. Instructions at the bottom of the page.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form>
+                        <div class="">
+                            <textarea class="form-control" id="rawData" rows="20"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer" id="screenshotMarker">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner text-start" id="itemPreview">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="">
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="GroupSelectEdit">Group</label>
+                            <select name='Group' class="form-select" id="GroupSelectEdit">
+                                {% if currentGroups is none %}
+                                <option value="">Create a new Group First!</option>
+                                {% else %}
+                                {% for id, details in currentGroups.items() %}
+                                <option value="{{ id }}">{{ details["GroupName"] }}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='ItemName' id="ItemNameGroup"
+                                placeholder="Item Name">
+                            <label for="ItemNameGroup">Item Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='ItemNameHTML' id="ItemNameHTMLGroup"
+                                placeholder="Item Name HTML">
+                            <label for="ItemNameHTMLGroup">Item Name HTML</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" name='Notes' placeholder="Item Notes" id="NotesGroup"
+                                style="height: 100px"></textarea>
+                            <label for="NotesGroup">Notes</label>
+                        </div>
+                        <input type='text' name="RawData" id="RawData" hidden>
+                        <input type='text' name="HumanData" id="HumanData" hidden>
+                        <input type='text' name="HTMLData" id="HTMLData" hidden>
+
+                        <button class="btn btn-primary mb-1" type="submit">Add to DB!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-3 mt-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Initial Setup</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">You will need the <a href="https://modrinth.com/mod/component-viewer">Component Viewer</a> mod on <code>Fabric 1.21.8</code>. This has not been tested on any newer, or older versions.</li>
+                <li class="list-group-item mc-gold bg-dark">You will need to open the <code>Component Viewer</code> settings, and ensure the following settings are correct:</li>
+                <li class="list-group-item mc-gold bg-dark"><code>Clipboard>Copy: Item Stack</code></li>
+                <li class="list-group-item mc-gold bg-dark"><code>Clipboard>Formatting: JSON</code></li>
+                <li class="list-group-item mc-gold bg-dark"><code>Clipboard>Indentation: 4</code></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Adding An Item</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Once you have the <code>Component Viewer</code> mod setup, you will press <code>Ctrl+C</code> to copy the data of an item.</li>
+                <li class="list-group-item mc-gold bg-dark">Then you will press <code>Ctrl+V</code> inside the large input on the left side of the screen.</li>
+                <li class="list-group-item mc-gold bg-dark">From there, you should see the middle box fill up with an item preview, as well as sme inputs on the right side prefilling themselves. If this did not happen, please reach out to AlexTheNerd on Discord and it will be looked into to see if a bug happened, or if a mistake was made.</li>
+                <li class="list-group-item mc-gold bg-dark">For most tools/armor pieces, the <code>Primary Tag</code> box will fill itself in, however if the item is a <code>Helmet</code>, then it will likely not mark itself, and you will need to do so.</li>
+                <li class="list-group-item mc-gold bg-dark">From there, you can fill in the tag slots as needed, don't worry about messing it up, they can always be fixed later.</li>
+                <li class="list-group-item mc-gold bg-dark">The <code>Item Name</code> input is the name that the Discord bot will use, if it is a duplicate of another item it will not be able to be searched. So if needed, change it.</li>
+                <li class="list-group-item mc-gold bg-dark">The <code>Notes</code> portion is shown when people click on the item, or when it is searched using the item bot on Discord. You can use Discord formatting such as lists, underlining, bold, italics etc. as you please.</li>
+                <li class="list-group-item mc-gold bg-dark">Press <code>Add to DB!</code> when finished.</li>
+                
+                
+
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    var rawDataTextarea = document.getElementById("rawData");
+    if (rawDataTextarea.addEventListener) {
+        rawDataTextarea.addEventListener('input', function () {
+            UpdatePreview();
+        }, false);
+    }
+
+    /* Converts the silly minecraft types to my own more easily usable ones. */
+    const EnchantmentsList = {
+        // Vanilla
+        "aqua_affinity": "Aqua Affinity",
+        "bane_of_arthropods": "Bane of Arthropods",
+        "binding_curse": "Curse of Binding",
+        "blast_protection": "Blast Protection",
+        "breach": "Breach",
+        "channeling": "Channeling",
+        "density": "Density",
+        "depth_strider": "Depth Strider",
+        "efficiency": "Efficiency",
+        "feather_falling": "Feather Falling",
+        "fire_aspect": "Fire Aspect",
+        "fire_protection": "Fire Protection",
+        "flame": "Flame",
+        "fortune": "Fortune",
+        "frost_walker": "Frost Walker",
+        "impaling": "Impaling",
+        "infinity": "Infinity",
+        "knockback": "Knockback",
+        "looting": "Looting",
+        "loyalty": "Loyalty",
+        "luck_of_the_sea": "Luck of the Sea",
+        "lure": "Lure",
+        "mending": "Mending",
+        "multishot": "Multishot",
+        "piercing": "Piercing",
+        "power": "Power",
+        "projectile_protection": "Projectile Protection",
+        "protection": "Protection",
+        "punch": "Punch",
+        "quick_charge": "Quick Charge",
+        "respiration": "Respiration",
+        "riptide": "Riptide",
+        "sharpness": "Sharpness",
+        "silk_touch": "Silk Touch",
+        "smite": "Smite",
+        "soul_speed": "Soul Speed",
+        "sweeping_edge": "Sweeping Edge",
+        "swift_sneak": "Swift Sneak",
+        "thorns": "Thorns",
+        "unbreaking": "Unbreaking",
+        "vanishing_curse": "Curse of Vanishing",
+        "wind_burst": "Wind Burst",
+        "flame_walker": "Flame Walker",
+
+        // MysticMC
+        "thrifty": "Thrifty",
+        "tunnel": "Tunnel",
+        "smelter": "Smelter",
+
+        // BlossomCraft
+        "sonic": "Sonic",
+        "ice_aspect": "Ice Aspect",
+        "saturation": "Saturation",
+        "ender_bow": "Ender Bow",
+        "haste": "Haste",
+        "exp_hunter": "Exp Hunter",
+        "rage": "Rage",
+        "wither": "Wither",
+        "replanter": "Replanter"
+    };
+
+    const EnchantmentsLevelOneMaxList = [
+        "mending",
+        "vanishing_curse",
+        "aqua_affinity",
+        "binding_curse",
+        "channeling",
+        "flame",
+        "infinity",
+        "multishot",
+        "silk_touch",
+
+        // MysticMC
+        "smelter",
+        "flame_walker",
+
+        // BlossomCraft
+        "ender_bow",
+        "rage",
+        "replanter"
+    ];
+
+    const ColorCodes = {
+        "black": "mc-black",
+        "dark_blue": "mc-dark-blue",
+        "dark_green": "mc-dark-green",
+        "dark_aqua": "mc-dark-aqua",
+        "dark_red": "mc-dark-red",
+        "dark_purple": "mc-dark-purple",
+        "gold": "mc-gold",
+        "gray": "mc-gray",
+        "dark_gray": "mc-dark-gray",
+        "blue": "mc-blue",
+        "green": "mc-green",
+        "aqua": "mc-aqua",
+        "red": "mc-red",
+        "light_purple": "mc-light-purple",
+        "yellow": "mc-yellow",
+        "white": "mc-white"
+    };
+
+
+
+    function convertEnchantmentsToHTML(enchantments, bypass = false) {
+        return Object.entries(enchantments).reduce((acc, [enchant, level]) => {
+            let name = enchant.replace("minecraft:", "");
+            if (!bypass && name === "feather_falling" && level === 6) return acc;
+
+            let label = EnchantmentsList[name] || name;
+            let display = EnchantmentsLevelOneMaxList.includes(name) ? label : `${label} ${level}`;
+
+            if (!EnchantmentsList[name]) console.warn(`Unknown enchantment encountered: ${name} ${level}`);
+
+            acc.push(`<span class=\"mc-gray\">${display}</span>`);
+            return acc;
+        }, []);
+    }
+
+    function convertEnchantmentsToHumanReadable(enchantments, bypass = false) {
+        return Object.entries(enchantments).reduce((acc, [enchant, level]) => {
+            let name = enchant.replace("minecraft:", "");
+            if (!bypass && name === "feather_falling" && level === 6) return acc;
+
+            let label = EnchantmentsList[name] || name;
+            let display = EnchantmentsLevelOneMaxList.includes(name) ? label : `${label} ${level}`;
+
+            if (!EnchantmentsList[name]) console.warn(`Unknown enchantment encountered: ${name} ${level}`);
+
+            acc.push(display);
+            return acc;
+        }, []);
+    }
+
+    function convertItemTypes(itemType) {
+        const itemTypesToCheck = [
+            "helmet", "chestplate", "leggings", "boots", "elytra", "pickaxe",
+            "axe", "hoe", "shovel", "rod", "sword", "crossbow", "bow", "trident", "mace"
+        ];
+
+        const cleanType = itemType.replace("minecraft:", "");
+
+        for (const type of [""]) {
+            if (type === "rod" && cleanType === "fishing_rod") return "rod";
+            if (type === "rod" && cleanType !== "fishing_rod") continue;
+            if (cleanType.includes(type.toLowerCase())) return type;
+        }
+
+        return null;
+    }
+
+    function extractWinChanceFromLore(ItemLoreHuman) {
+        for (const line of ItemLoreHuman) {
+            if (line.includes("Win Chance: ")) {
+                return line.replace("Win Chance: ", "").replace("%", "");
+            }
+        }
+        return null;
+    }
+    function extractRarityFromLore(ItemLoreHuman) {
+        for (const line of ItemLoreHuman) {
+            if (line.includes("Rarity: ")) {
+                return line.replace("Rarity: ", "");
+            }
+        }
+        return null;
+    }
+
+    function detectInfiniteBlock(ItemLoreHTML, ItemNameHuman) {
+        let InfiniteBlock = 0;
+        for (const line of ItemLoreHTML) {
+            if (line.toLowerCase().includes("infinite")) {
+                InfiniteBlock = 1;
+            }
+        }
+        if ((ItemNameHuman.toLowerCase().includes("infinite") || ItemNameHuman.toLowerCase().includes("paint")) &&
+            ItemNameHuman !== "✦ Quest - PAINT CYCLER ✦") {
+            InfiniteBlock = 1;
+        }
+        return InfiniteBlock;
+    }
+    function takeScreenshot() {
+        const targetElement = document.getElementById('screenshotMarker');
+
+        html2canvas(targetElement).then(canvas => {
+            const imageDataURL = canvas.toDataURL('image/png');
+
+            // Display the captured image
+            const img = document.createElement('img');
+            img.src = imageDataURL;
+            document.body.appendChild(img);
+
+            // Optionally, trigger download
+            const link = document.createElement('a');
+            link.href = imageDataURL;
+            link.download = 'item.png';
+            link.click();
+            link.remove()
+        });
+    }
+
+    function flattenMCTextComponent(component, parentStyles = {}) {
+        const parts = [];
+
+        // Handle string input
+        if (typeof component === "string") {
+            try {
+                component = JSON.parse(component);
+            } catch {
+                return [{ text: component }];
+            }
+        }
+
+        // Guard against invalid input
+        if (!component || typeof component !== "object") return [];
+        // Merge styles from parent
+        const currentStyles = { ...parentStyles };
+        if (component.color !== undefined) currentStyles.color = component.color;
+        if (component.bold !== undefined) currentStyles.bold = component.bold;
+        if (component.italic !== undefined) currentStyles.italic = component.italic;
+        if (component.underlined !== undefined) currentStyles.underlined = component.underlined;
+        if (component.obfuscated !== undefined) currentStyles.obfuscated = component.obfuscated;
+        // If this component itself has text, record it
+        if (component.text && component.text !== "") {
+            parts.push({ text: component.text, ...currentStyles });
+        }
+
+        // If there’s an "extra", recurse into it
+        if (component.extra && Array.isArray(component.extra)) {
+            for (const child of component.extra) {
+                parts.push(...flattenMCTextComponent(child, currentStyles));
+            }
+        }
+
+        return parts;
+    }
+
+    // Convert Minecraft text component to HTML
+    function convertMCLineToHTML(line) {
+        const parts = flattenMCTextComponent(line);
+        if (!parts.length) return "";
+
+        let html = "";
+        for (const part of parts) {
+            let text = part.text;
+
+            let styles = "";
+            let colorClass = "";
+
+            if (part.color && ColorCodes[part.color]) {
+                colorClass += ColorCodes[part.color];
+            } else if (part.color) {
+                styles += `color:${part.color};`;
+            }
+
+            if (part.bold) styles += "font-weight:bold;";
+            if (part.italic) styles += "font-style:italic;";
+            if (part.underlined) styles += "text-decoration:underline;";
+
+            if (part.obfuscated)
+                text = `<span class="mc-obfuscated">${text}</span>`;
+
+            html += `<span class="${colorClass}" style="${styles}">${text}</span>`;
+        }
+
+        // Check if html contains any non-whitespace text content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        if (!tempDiv.textContent.trim()) return "";
+
+        return html;
+    }
+
+    // Convert Minecraft text component to plain human-readable text
+    function convertMCLineToHumanReadable(line) {
+        const parts = flattenMCTextComponent(line);
+        return parts.map(p => p.text).join("");
+    }
+
+    // Updated UpdatePreview function
+    function UpdatePreview() {
+        const rawData = JSON.parse(rawDataTextarea.value);
+        let finalItemType = convertItemTypes(rawData.id);
+
+        const itemName = rawData.components["minecraft:custom_name"];
+        const finalItemNameHTML = convertMCLineToHTML(itemName);
+        const finalItemNameHuman = convertMCLineToHumanReadable(itemName).replaceAll("§", "").replaceAll("&", "");
+
+        let EnchantmentsHTML = [];
+        let EnchantmentsHuman = [];
+        if ("minecraft:enchantments" in rawData.components) {
+            const enchantments = rawData.components["minecraft:enchantments"];
+            EnchantmentsHTML = convertEnchantmentsToHTML(enchantments);
+            EnchantmentsHuman = convertEnchantmentsToHumanReadable(enchantments);
+        }
+
+        let ItemLoreHTML = [];
+        let ItemLoreHuman = [];
+        if (rawData.components["minecraft:lore"]) {
+            for (const loreLine of rawData.components["minecraft:lore"]) {
+                ItemLoreHTML.push(convertMCLineToHTML(loreLine));
+                ItemLoreHuman.push(convertMCLineToHumanReadable(loreLine).replaceAll("§", "").replaceAll("&", ""));
+            }
+        }
+
+        const Unbreakable = "minecraft:unbreakable" in rawData.components;
+
+        // Build final HTML preview
+        let finalHTML = `<div>${finalItemNameHTML}</div>`;
+        for (const enchant of EnchantmentsHTML) finalHTML += `<div>${enchant}</div>`;
+        for (const line of ItemLoreHTML) finalHTML += `<div>${line || "&nbsp;"}</div>`;
+        if (Unbreakable) finalHTML += `<div><span class="mc-blue">Unbreakable</span></div>`;
+        finalHTML += `<div><span class='mc-dark-gray'>${rawData.id}</span></div>`;
+
+        if (detectInfiniteBlock(ItemLoreHuman, finalItemNameHuman) === 1) finalItemType = "Infinite";
+
+        // Build human-readable text
+        let finalHuman = `${finalItemNameHuman} `;
+        finalHuman += EnchantmentsHuman.join(" ");
+        finalHuman += ItemLoreHuman.join(" ");
+        if (Unbreakable) finalHuman += " Unbreakable";
+
+
+
+        // Update HTML elements
+        document.getElementById("itemPreview").innerHTML = finalHTML;
+        document.getElementById('ItemNameGroup').value = finalItemNameHuman;
+        document.getElementById('ItemNameHTMLGroup').value = finalItemNameHTML;
+        document.getElementById('RawData').value = JSON.stringify(rawData);
+        document.getElementById('HumanData').value = finalHuman;
+        document.getElementById('HTMLData').value = finalHTML;
+
+        // takeScreenshot()
+    }
+
+
+
+
+</script>
+
+
+{% endblock %}

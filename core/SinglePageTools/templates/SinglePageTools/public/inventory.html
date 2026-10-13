@@ -1,0 +1,491 @@
+{% set Title = "Inventory Planner" %}
+{% set UseSEO = true %}
+{% set Description = "Plan out your inventory and gear on the server." %}
+{% set UseTracker = true %}
+{% extends "SinglePageTools/IntegratedLayout.html" %}
+{% block content %}
+{% set iconRouteBase = "images/Icons/" %}
+<style>
+    .mc-bounding-box {
+        display: flex;
+	 align-items: center;
+    }
+
+    .mc-gui {
+        display: grid;
+        grid-template-columns: 3px 3px auto 3px 3px;
+        grid-template-rows: 3px 3px auto 3px 3px;
+        grid-template-areas: "tl-tl tr-tl t tl-tr tr-tr" "bl-tl br-tl t bl-tr br-tr" "l l inv r r" "tl-bl tr-bl b tl-br tr-br" "bl-bl br-bl b bl-br br-br";
+    }
+
+    .mc-gui>.s-br {
+        box-shadow: 3px 0 0 black, 0 3px 0 black;
+    }
+
+    .mc-gui>.s-bl {
+        box-shadow: -3px 0 0 black, 0 3px 0 black;
+    }
+
+    .mc-gui>.s-tr {
+        box-shadow: 0 -3px 0 black, 3px 0 0 black;
+    }
+
+    .mc-gui>.s-tl {
+        box-shadow: 0 -3px 0 black, -3px 0 0 black;
+    }
+
+    .mc-gui>.top {
+        grid-area: t;
+        box-shadow: 0 -3px 0 black;
+        background-color: #fff;
+    }
+
+    .mc-gui>.left {
+        grid-area: l;
+        box-shadow: -2px 0 0 black;
+        background-color: #fff;
+    }
+
+    .mc-gui>.right {
+        grid-area: r;
+        box-shadow: 2px 0 0 black;
+        background-color: #555;
+    }
+
+    .mc-gui>.bottom {
+        grid-area: b;
+        box-shadow: 0 2px 0 black;
+        background-color: #555;
+    }
+
+    .mc-gui>.middle {
+        background-color: #c6c6c6;
+        grid-area: inv;
+    }
+
+    .mc-gui>.tl-tl {
+        grid-area: tl-tl;
+        background-color: #fff;
+        position: relative;
+        bottom: calc(-3 * 3px);
+        right: calc(-3 * 3px);
+    }
+
+    .mc-gui>.br-br {
+        grid-area: br-br;
+        background-color: #555;
+        position: relative;
+        top: calc(-3 * 3px);
+        left: calc(-3 * 3px);
+    }
+
+    .mc-gui>.bl-tl,
+    .mc-gui>.tr-tl,
+    .mc-gui>.br-tl {
+        background-color: #fff;
+    }
+
+    .mc-gui>.bl-tl {
+        grid-area: bl-tl;
+    }
+
+    .mc-gui>.tr-tl {
+        grid-area: tr-tl;
+    }
+
+    .mc-gui>.br-tl {
+        grid-area: br-tl;
+    }
+
+    .mc-gui>.bl-tr {
+        grid-area: bl-tr;
+        background-color: #c6c6c6;
+    }
+
+    .mc-gui>.tr-bl {
+        grid-area: tr-bl;
+        background-color: #c6c6c6;
+    }
+
+    .mc-gui>.tr-br,
+    .mc-gui>.tl-br,
+    .mc-gui>.bl-br {
+        background-color: #555;
+    }
+
+    .mc-gui>.tr-br {
+        grid-area: tr-br;
+    }
+
+    .mc-gui>.tl-br {
+        grid-area: tl-br;
+    }
+
+    .mc-gui>.bl-br {
+        grid-area: bl-br;
+    }
+
+    .inventory {
+        padding: 0.6rem;
+        display: grid;
+        grid-gap: 0.9rem;
+    }
+
+    .inventory .top {
+        display: flex;
+        align-items: flex-end;
+    }
+
+    .inventory .top .armor {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .inventory .top .character {
+        background-color: black;
+        width: 8.55rem;
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    .inventory .top .crafting {
+        flex: 1;
+    }
+
+    .inventory .middle {
+        display: grid;
+        grid-template-columns: repeat(9, auto);
+    }
+
+    .inventory .bottom {
+        display: grid;
+        grid-template-columns: repeat(9, auto);
+    }
+
+    .cell {
+        box-shadow: inset 3px 3px 0 0 #373737, inset -3px -3px 0 0 #fff;
+        background-color: #8b8b8b;
+        height: 3rem;
+        width: 3rem;
+        position: relative;
+    }
+
+    .cell:hover {
+        background-color: #a1a1a1;
+    }
+
+    .cell::before,
+    .cell::after {
+        content: "";
+        height: 3px;
+        width: 3px;
+        background-color: #8b8b8b;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    .cell::after {
+        top: auto;
+        right: auto;
+        left: 0;
+        bottom: 0;
+    }
+    /* Wider Tooltips */
+    .wide-tooltip .tooltip-inner { max-width: 420px; white-space: normal; }
+    /* Better font size on dropdowns */
+    .input-group-text, .form-select {
+        font-size: 16px;
+    }
+
+    div.input-group input.form-control {
+        font-size: 16px;
+    }
+</style>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Inventory Planner</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Use the tiles below to plan out your inventory, or import an
+                    inventory below! Simply paste the code you recieved/saved and click 'Import from text'</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row text-center">
+            <div class="">
+                <textarea class="form-control" id="importCode" value="" rows="5"></textarea>
+            </div>
+            <div class="col-xs-3 col-sm-6 col-md-3 mt-3">
+                <button class="btn btn-danger" onclick="importCode()">
+                    Import from text
+                </button>
+            </div>
+            <div class="col-xs-3 col-sm-6 col-md-3 mt-3">
+                <button class="btn btn-danger" onclick="copyToClipBoard()">
+                    Copy To Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3 gy-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 mc-bounding-box">
+        <div class="mc-gui">
+            <!-- sides-->
+            <div class="left"></div>
+            <div class="right"></div>
+            <div class="bottom"></div>
+            <div class="top"></div>
+            <!-- top left-->
+            <div class="tl-tl"></div>
+            <div class="tr-tl s-tl"></div>
+            <div class="bl-tl s-tl"></div>
+            <div class="br-tl"></div>
+            <!-- bottom left-->
+            <div class="tr-bl s-bl"></div>
+            <!-- top right-->
+            <div class="bl-tr s-tr"></div>
+            <!-- bottom right-->
+            <div class="tl-br"></div>
+            <div class="tr-br s-br"></div>
+            <div class="bl-br s-br"></div>
+            <div class="br-br"></div>
+            <!-- actual inventory-->
+            <div class="inventory middle">
+                <div class="top">
+                    <div class="armor">
+                        <div class="cell helmet" id="slot_helmet"></div>
+                        <div class="cell chest" id="slot_chestplate"></div>
+                        <div class="cell leggings" id="slot_leggings"></div>
+                        <div class="cell boots" id="slot_boots"></div>
+                    </div>
+                    <div class="character cell"></div>
+                    <div class="cell left" id="slot_offhand"></div>
+                    <div class="crafting"></div>
+                </div>
+                <div class="middle">
+                    {% for slot in range(1, 28) %}
+                        <div class="cell" id="slot_inventory_{{slot}}"}></div>
+                    {% endfor %}
+
+                </div>
+                <div class="bottom">
+                    {% for slot in range(1, 10) %}
+                        <div class="cell" id="slot_hotbar_{{slot}}"}></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mt-2">
+{% set slotList = [
+    ("Helmet", "Helmet", "helmet"),
+    ("Chestplate", "Chestplate", "chestplate"),
+    ("Leggings", "Leggings", "leggings"),
+    ("Boots", "Boots", "boots"),
+    ("Offhand", "Offhand", "offhand"),
+    (none, none, none),
+
+    ("Hotbar 1st", "None", "hotbar_1"),
+    ("Hotbar 2nd", "None", "hotbar_2"),
+    ("Hotbar 3rd", "None", "hotbar_3"),
+    ("Hotbar 4th", "None", "hotbar_4"),
+    ("Hotbar 5th", "None", "hotbar_5"),
+    ("Hotbar 6th", "None", "hotbar_6"),
+    ("Hotbar 7th", "None", "hotbar_7"),
+    ("Hotbar 8th", "None", "hotbar_8"),
+    ("Hotbar 9th", "None", "hotbar_9"),
+    (none, none, none),
+    
+    ("Inventory 1st", "None", "inventory_1"),
+    ("Inventory 2nd", "None", "inventory_2"),
+    ("Inventory 3rd", "None", "inventory_3"),
+    ("Inventory 4th", "None", "inventory_4"),
+    ("Inventory 5th", "None", "inventory_5"),
+    ("Inventory 6th", "None", "inventory_6"),
+    ("Inventory 7th", "None", "inventory_7"),
+    ("Inventory 8th", "None", "inventory_8"),
+    ("Inventory 9th", "None", "inventory_9"),
+    ("Inventory 10th", "None", "inventory_10"),
+    ("Inventory 11th", "None", "inventory_11"),
+    ("Inventory 12th", "None", "inventory_12"),
+    ("Inventory 13th", "None", "inventory_13"),
+    ("Inventory 14th", "None", "inventory_14"),
+    ("Inventory 15th", "None", "inventory_15"),
+    ("Inventory 16th", "None", "inventory_16"),
+    ("Inventory 17th", "None", "inventory_17"),
+    ("Inventory 18th", "None", "inventory_18"),
+    ("Inventory 19th", "None", "inventory_19"),
+    ("Inventory 20th", "None", "inventory_20"),
+    ("Inventory 21st", "None", "inventory_21"),
+    ("Inventory 22nd", "None", "inventory_22"),
+    ("Inventory 23rd", "None", "inventory_23"),
+    ("Inventory 24th", "None", "inventory_24"),
+    ("Inventory 25th", "None", "inventory_25"),
+    ("Inventory 26th", "None", "inventory_26"),
+    ("Inventory 27th", "None", "inventory_27"),
+    
+] %}
+
+{% for slot, default, id in slotList %}
+{% if slot is none %}
+    </div><div class="row gx-3 gy-3 mt-3">
+{% else %}
+
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">{{slot}} Slot</h3>
+            <div class="card-body weird-margins">
+                <div class="input-group">
+                    <label class="input-group-text">Slot Category</label>
+                    <select class="form-select" id="slot_{{id}}_category_selector" onchange="buildCategoryItemList('{{id}}')">
+                        {% if default == "None" %}
+                            <option selected>None</option>
+                            {% for tag in validTags %}
+                                <option>{{tag}}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option>None</option>
+                            {% for tag in validTags %}
+                                {% if tag == default %} 
+                                    <option selected>{{ tag }}</option>
+                                {% else %}
+                                    <option>{{ tag }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        <option>No Tag</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-group-text">Item</label>
+                    <select class="form-select" id="slot_{{id}}_item_selector" onchange="updateSlot('{{id}}')">
+                        <option value="" selected>None</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endfor %}
+
+</div>
+
+
+
+<script>
+
+var itemList = {{items | safe}}
+var code = {}
+function buildCategoryItemList(slot, skip_init = false) {
+    categorySelector = document.getElementById(`slot_${slot}_category_selector`);
+    itemSelector = document.getElementById(`slot_${slot}_item_selector`);
+    htmlSpace = document.getElementById(`slot_${slot}`);
+    itemSelector.options.length = 0;
+    if (categorySelector.value == "None") {
+        var opt = document.createElement('option');
+        opt.value = `{{ blankSlot | safe }}`
+        opt.innerHTML = "None"
+        itemSelector.appendChild(opt)
+    } else if (categorySelector.value == "No Tag") {
+        itemList.forEach(function(item) {
+            if (item.Tags.length === 0) {
+                var opt = document.createElement('option');
+                opt.value = item.HTML
+                opt.innerHTML = item.Name
+                itemSelector.appendChild(opt);
+            }
+        })
+    } else {
+        itemList.forEach(function(item) {
+            
+            if (item.Tags.some(s => s.toLowerCase() === categorySelector.value.toLowerCase())) {
+                var opt = document.createElement('option');
+                opt.value = item.HTML
+                opt.innerHTML = item.Name
+                itemSelector.appendChild(opt);
+            }
+
+        })
+    }
+    updateSlot(slot, skip_init)
+}
+
+function updateSlot(slot, skip_init = false) {
+    itemSelector = document.getElementById(`slot_${slot}_item_selector`);
+    htmlSpace = document.getElementById(`slot_${slot}`);
+
+    htmlSpace.innerHTML = itemSelector.value;
+    code[slot] = itemSelector.options[itemSelector.selectedIndex].text;
+    updateCode()
+    if (!skip_init) {
+        initializeBootstrapTooltips()
+    }
+}
+
+function initializeBootstrapTooltips() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {sanitize: false})
+    })
+}
+function updateCode() {
+    codeBox = document.getElementById("importCode");
+    codeBox.value = JSON.stringify(code)
+}
+
+function setSelectedValue(selectObj, valueToSet, def="No Tag") {
+    for (var i = 0; i < selectObj.options.length; i++) {
+        if (selectObj.options[i].text== valueToSet) {
+            selectObj.options[i].selected = true;
+            return;
+        }
+    }
+    setSelectedValue(selectObj, def)
+}
+
+function importCode() {
+    userInput = JSON.parse(document.getElementById("importCode").value);
+    Object.keys(userInput).forEach(key => {
+        htmlSpace = document.getElementById(`slot_${key}`);
+        categorySelector = document.getElementById(`slot_${key}_category_selector`);
+        itemSelector = document.getElementById(`slot_${key}_item_selector`);
+        const value = userInput[key]
+        itemList.forEach(function(item) {
+            if (item.Name == value) {
+                htmlSpace.innerHTML = item.HTML
+                setSelectedValue(categorySelector, item.Tags[0])
+                buildCategoryItemList(key)
+                setSelectedValue(itemSelector, item.Name)
+                updateSlot(key)
+            }
+
+        })
+    })
+    initializeBootstrapTooltips()
+
+}
+
+function copyToClipBoard() {
+    var copyText = document.getElementById("importCode");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(copyText.value);
+    alert("Copied import code to clipboard.")
+}
+
+{% for slot, default, id in slotList %}
+    {%if slot %}
+        buildCategoryItemList('{{id}}', true)
+    {% endif %}
+{% endfor %}
+
+</script>
+
+{% endblock %}

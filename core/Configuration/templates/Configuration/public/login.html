@@ -1,0 +1,36 @@
+{% set Title = "Login" %}
+{% set UseSEO = true %}
+{% set Description = "Log in to your account to manage the database." %}
+{% set UseTracker = true %}
+{% extends "Configuration/IntegratedLayout.html" %}
+{% block content %}
+    <div class="row gx-3 gy-3">
+
+
+
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+            <div class="give-preview-text-outer">
+                <div class="give-preview-text w-100">
+                    <div class="give-preview-text-inner">
+                        <form method="POST" action="">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name='username' id="usernameGroup"
+                                    placeholder="Your Username">
+                                <label for="usernameGroup">Your Username</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" name='password' id="passwordGroup"
+                                    placeholder="Password">
+                                <label for="passwordGroup">Password</label>
+                            </div>
+                            <input type="checkbox" class="btn-check" name='remember' id="btn-check-outlined" autocomplete="">
+                            <label class="btn btn-outline-info" for="btn-check-outlined">Remember Me</label>
+                            <button class="btn btn-primary mb-1" type="submit">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

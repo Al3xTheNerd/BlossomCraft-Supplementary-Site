@@ -1,0 +1,110 @@
+{% set Title = "Item Stats" %}
+{% set UseSEO = true %}
+{% set Description = "Stats on how many items exist." %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block styles %}
+<style>
+    .tooltip {
+        --bs-tooltip-max-width: 500px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Advanced Search{% if numResults != 0%} (<code>{{numResults}} Results</code>){% endif %}</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Search with multiple tags using the below form. In the <code>Search Term</code> box you may use <code>&</code> to join multiple terms, such as <code>haste 4 & set</code> to search for sets with Haste 4</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="{{ url_for('ItemListing.Search') }}">
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="CrateSelectEdit">Crate</label>
+                            <select name='Crate' class="form-select" id="CrateSelectEdit">
+                                <option value="">All Crates</option>
+                                {% for id, details in currentCrates.items() %}
+                                <option value="{{ id }}" {% if id==recentCrate|int %}selected{% endif %}>{{
+                                    details["CrateName"] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="TagGroup">Tag</label>
+                            <select name='Tag' class="form-select" id="TagGroup">
+                                <option value="">All Tags</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if tag==recentTag %}selected{% endif %}>{{ tag }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="TagTwoGroup">Tag Two</label>
+                            <select name='TagTwo' class="form-select" id="TagTwoGroup">
+                                <option value="">All Tags</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if tag==recentTagTwo %}selected{% endif %}>{{ tag }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="TagThreeGroup">Tag Three</label>
+                            <select name='TagThree' class="form-select" id="TagThreeGroup">
+                                <option value="">All Tags</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if tag==recentTagThree %}selected{% endif %}>{{ tag }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="RarityGroup">Rarity</label>
+                            <select name='Rarity' class="form-select" id="Rarity">
+                                <option value="">All Rarities</option>
+                                <option value="0">Unlisted (Quests)</option>
+                                {% for rarity in rarityList %}
+                                <option value="{{ rarity }}" {% if rarity==recentRarity %}selected{% endif %}>{{ rarity
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='Term' id="TermGroup" placeholder="Search Term"
+                                value="{{ recentTerm }}">
+                            <label for="TermGroup">Search Term</label>
+                        </div>
+                        <button class="btn btn-primary mb-1" type="submit">Search!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-3">
+    {% for item in MiscItems %}
+
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2 col-xxl-2 hard-wrap">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <p class="card-text">{{item.Notes}}</h4>
+                {{ item.icon_based_image() | safe }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% include 'itemDisplay.html' %}
+
+
+
+
+{% endblock %}

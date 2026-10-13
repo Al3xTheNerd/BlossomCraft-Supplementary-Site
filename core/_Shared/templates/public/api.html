@@ -1,0 +1,283 @@
+{% set Title = "API Docs" %}
+{% set UseSEO = true %}
+{% set Description = "Documentation for all publicly accessible API endpoints." %}
+{% set UseTracker = true %}
+{% extends "IntegratedLayout.html" %}
+{% block content %}
+<style>
+    code.m {
+        display: block;
+        white-space: pre-wrap
+    }
+</style>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Api Documentation</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">All endpoints/relevant files are listed below.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3 gy-3">
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">API Errors</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark"><code>0: NO_RESULTS</code>: No results found in database.
+                </li>
+                <li class="list-group-item mc-white bg-dark"><code>1: INVALID_COLUMN</code>: The database column you
+                    requested does not exist.</li>
+                <li class="list-group-item mc-white bg-dark">
+                    Errors can be seen in the <code>'messages'</code>portion of the API response.
+                </li>
+                <li class="list-group-item mc-white bg-dark">
+                    Example:<code class="m">{
+    "data": [
+        {}
+    ],
+    "messages": [
+        {
+        "1": "[ITEMINFOPLS] is not a valid column.."
+        },
+        {
+        "1": "[GIBINFO] is not a valid column.."
+        }
+    ]
+}</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Images</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">To determine what kind of image exists for an item icon,
+                    you will need to make sure to include <code>ImageType</code> in your <code>I-INCLUDED-INFO</code>
+                    headers to <code>api/items</code> or <code>api/miscitems</code></li>
+                <li class="list-group-item mc-white bg-dark">For Item Lore images, you can request that at
+                    <code>{{ request.url_root }}static/images/Descriptions/[itemid].png</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark">For Item Icon images, you can request that at
+                    <code>{{ request.url_root }}static/images/Icons/[item.id].[item.ImageType]</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark">For Misc. Item Lore images, you can request that at
+                    <code>{{ request.url_root }}static/images/Misc_Descriptions/[itemid].png</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark">For Misc. Item Icon images, you can request that at
+                    <code>{{ request.url_root }}static/images/Misc_Icons/[item.id].[item.ImageType]</code>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/items</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to query the Crate Item database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Default Results: <code>id, ItemName</code></li>
+                <li class="list-group-item mc-white bg-dark"><code>I-INCLUDED-INFO</code> valid options:
+                    <code>id, CrateID, TagPrimary, TagSecondary, TagTertiary, TagQuaternary, TagQuinary, TagSenary, TagSeptenary, WinPercentage, RarityHuman, RarityHTML, ItemName, ItemNameHTML, Notes, RawData, ItemHuman, ItemHTML, ItemOrder, ConnectedItems, EfficiencyLevel</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark"><code>I-INCLUDED-INFO</code> format:
+                    <code>id;CrateId;ItemName</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request with the header
+                    <code>I-INCLUDED-INFO</code> to get all item information stored in the database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+headers = {
+    "I-INCLUDED-INFO" : "id;CrateID;ItemName;ImageType"
+}
+results = requests.get("{{ request.url_root }}api/items", headers=headers)</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/crates</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to query the Crate List database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Default Results:
+                    <code>id, CrateName, ReleaseDate, URLTag, CrateType</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request to get all Crate
+                    information stored in the database.</li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+results = requests.get("{{ request.url_root }}api/crates")</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/miscitems</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to query the Misc. Item database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Default Results: <code>id, ItemName</code></li>
+                <li class="list-group-item mc-white bg-dark"><code>I-INCLUDED-INFO</code> valid options:
+                    <code>id, GroupID, ItemName, ItemNameHMTL, Notes, RawData, ItemHuman, ItemHTML, ItemOrder, ImageType</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark"><code>I-INCLUDED-INFO</code> format:
+                    <code>id;GroupID;ItemName</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request with the header
+                    <code>I-INCLUDED-INFO</code> to get all misc. item information stored in the database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+headers = {
+    "I-INCLUDED-INFO" : "id;GroupID;ItemName;ImageType"
+}
+results = requests.get("{{ request.url_root }}api/miscitems", headers=headers)</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/miscgroups</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to query the Group List database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Default Results:
+                    <code>id, GroupName, ReleaseDate, URLTag, GroupType, Notes, GroupOrder</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request to get all Crate
+                    information
+                    stored in the database.</li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+results = requests.get("{{ request.url_root }}api/miscgroups")</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/sets</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to query the Set List database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Default Results:
+                    <code>id, Name, ItemList, Type, SetDescription, SetOrder</code>
+                </li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request to get all Set information
+                    stored in the database.</li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+results = requests.get("{{ request.url_root }}api/sets")</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/tags</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to query the list of tags in use by
+                    the
+                    database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Default Results: <code>List[str]</code></li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request to get all tags stored in
+                    the
+                    database.</li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+results = requests.get("{{ request.url_root }}api/tags")</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/itemCount</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to query the number of Crate Items
+                    currently in the database.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Default Results: <code>int</code></li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request to get the number of items.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+results = requests.get("{{ request.url_root }}api/itemCount")</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/vote/set/[server]/[amount]</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to set the current vote count on a
+                    server.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request to set the number of votes.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+results = requests.get("{{ request.url_root }}api/vote/set/Server1/99")</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/vote/get/[server]</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to get the current vote count on a
+                    server.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request to get the number of votes.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+results = requests.get("{{ request.url_root }}api/vote/get/Server1")</code></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ request.url_root }}api/itemtracker/[code]</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark">This endpoint is used to get the list of items from a 6 digit Item Tracker Export code.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Format: <code>GET</code></li>
+                <li class="list-group-item mc-white bg-dark">Default Results: <code>List[Item.id]</code></li>
+                <li class="list-group-item mc-white bg-dark">Make a <code>GET</code> request to get the list of items.
+                </li>
+                <li class="list-group-item mc-white bg-dark">Python Example:<code class="m">import requests
+results = requests.get("{{ request.url_root }}api/itemtracker/aoo65d")</code></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

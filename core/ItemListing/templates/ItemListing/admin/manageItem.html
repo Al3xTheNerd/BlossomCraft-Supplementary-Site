@@ -1,0 +1,328 @@
+{% set Title = "Manage Item: " ~ item.ItemName %}
+{% set UseSEO = false %}
+{% set Description = "Manage the info of " ~ item.ItemName %}
+{% set UseTracker = false %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Manage Item</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to change the tags of an item.</li>
+                <li class="list-group-item mc-gold bg-dark">The <code>Win Percentage</code> portion is directly used in
+                    the gambling page, and should not be messed with unless you're trolling.</li>
+                <li class="list-group-item mc-gold bg-dark">The <code>Notes</code> portion is shown when people click on
+                    the item, or when it is searched using the item bot on Discord. You can use Discord formatting such
+                    as lists, underlining, bold, italics etc. as you please.</li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner text-start" id="itemPreview">
+                    {{ item.ItemHTML | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="">
+                        {% if current_user.has_permission("edit_item_notes") %}
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" name='Notes' placeholder="Item Notes" id="NotesGroup"
+                                style="height: 100px">{{item.Notes}}</textarea>
+                            <label for="NotesGroup">Notes</label>
+                        </div>
+                        {% else %}
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" placeholder="Item Notes" id="NotesGroup"
+                                style="height: 100px" disabled>{{item.Notes}}</textarea>
+                            <label for="NotesGroup">Notes</label>
+                        </div>
+                        {% endif %}
+                        {% if current_user.has_permission("edit_item_tags") %}
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="PrimaryTagGroup">Primary Tag</label>
+                            <select name='PrimaryTag' class="form-select" id="PrimaryTagGroup">
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if item.TagPrimary==tag %} selected{% endif %}>{{ tag
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="SecondaryTagGroup">Secondary Tag</label>
+                            <select name='SecondaryTag' class="form-select" id="SecondaryTagGroup">
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if item.TagSecondary==tag %} selected{% endif %}>{{ tag
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="TertiaryTagGroup">Tertiary Tag</label>
+                            <select name='TertiaryTag' class="form-select" id="TertiaryTagGroup">
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if item.TagTertiary==tag %} selected{% endif %}>{{ tag
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="QuaternaryTagGroup">Quaternary Tag</label>
+                            <select name='QuaternaryTag' class="form-select" id="QuaternaryTagGroup">
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if item.TagQuaternary==tag %} selected{% endif %}>{{ tag
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="QuinaryTagGroup">Quinary Tag</label>
+                            <select name='QuinaryTag' class="form-select" id="QuinaryTagGroup">
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if item.TagQuinary==tag %} selected{% endif %}>{{ tag
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="SenaryTagGroup">Senary Tag</label>
+                            <select name='SenaryTag' class="form-select" id="SenaryTagGroup">
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if item.TagSenary==tag %} selected{% endif %}>{{ tag
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="SeptenaryTagGroup">Septenary Tag</label>
+                            <select name='SeptenaryTag' class="form-select" id="SeptenaryTagGroup">
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                <option value="{{ tag }}" {% if item.TagSeptenary==tag %} selected{% endif %}>{{ tag
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="PrimaryTagGroup">Primary Tag</label>
+                            <select class="form-select" id="PrimaryTagGroup" disabled>
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                {% if item.TagPrimary==tag %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="SecondaryTagGroup">Secondary Tag</label>
+                            <select class="form-select" id="SecondaryTagGroup" disabled>
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                {% if item.TagSecondary==tag %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="TertiaryTagGroup">Tertiary Tag</label>
+                            <select class="form-select" id="TertiaryTagGroup" disabled>
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                {% if item.TagTertiary==tag %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="QuaternaryTagGroup">Quaternary Tag</label>
+                            <select class="form-select" id="QuaternaryTagGroup" disabled>
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                {% if item.TagQuaternary==tag %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="QuinaryTagGroup">Quinary Tag</label>
+                            <select class="form-select" id="QuinaryTagGroup" disabled>
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                {% if item.TagQuinary==tag %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="SenaryTagGroup">Senary Tag</label>
+                            <select class="form-select" id="SenaryTagGroup" disabled>
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                {% if item.TagSenary==tag %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="SeptenaryTagGroup">Septenary Tag</label>
+                            <select class="form-select" id="SeptenaryTagGroup" disabled>
+                                <option value="">None</option>
+                                {% for tag in validTags %}
+                                {% if item.TagSeptenary==tag %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        {% if current_user.has_permission("edit_item_crate") %}
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="CrateSelectEdit">Crate</label>
+                            <select name='Crate' class="form-select" id="CrateSelectEdit">
+                                {% if currentCrates is none %}
+                                <option value="">Create a new Crate First!</option>
+                                {% else %}
+                                {% for id, details in currentCrates.items() %}
+                                <option value="{{ id }}" {% if item.CrateID==id|string %} selected{%endif%}>{{
+                                    details["CrateName"] }}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="CrateSelectEdit">Crate</label>
+                            <select class="form-select" id="CrateSelectEdit" disabled>
+                                {% if currentCrates is none %}
+                                <option value="">Create a new Crate First!</option>
+                                {% else %}
+                                {% for id, details in currentCrates.items() %}
+                                {% if item.CrateID==id|string %}
+                                <option value="{{ id }}">{{ details["CrateName"] }}</option>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        {% if current_user.has_permission("edit_item_grouped_items") %}
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="GroupSelectEdit">Grouped Items</label>
+                            <select name='ConnectedItems' class="form-select" id="GroupSelectEdit">
+                                <option value="">None</option>
+                                {% if currentMiscGroups is none %}
+                                <option value="">Create a new Group First!</option>
+                                {% else %}
+                                {% for group in currentMiscGroups %}
+                                <option value="{{ group.id }}" {% if item.ConnectedItems==group.id|string %} selected{%endif%}>{{
+                                    group.GroupName }}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="GroupSelectEdit">Grouped Items</label>
+                            <select class="form-select" id="GroupSelectEdit" disabled>
+                                <option value="">None</option>
+                                {% if currentMiscGroups is none %}
+                                <option value="">Create a new Group First!</option>
+                                {% else %}
+                                {% for group in currentMiscGroups %}
+                                {% if item.ConnectedItems==group.id|string %}
+                                <option value="{{ group.id }}"}>{{ group.GroupName }}</option>
+                                {%endif%}
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        {% if current_user.has_permission("edit_item_item_name") %}
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='ItemName' id="ItemNameGroup"
+                                placeholder="Item Name" value="{{item.ItemName}}">
+                            <label for="ItemNameGroup">Item Name</label>
+                        </div>
+                        {% else %}
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="ItemNameGroup"
+                                placeholder="Item Name" value="{{item.ItemName}}" disabled>
+                            <label for="ItemNameGroup">Item Name</label>
+                        </div>
+                        {% endif %}
+                        {% if current_user.has_permission("edit_item_win_percentage") %}
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='WinPercentage' id="WinPercentageGroup"
+                                placeholder="Win Percentage" value="{{item.WinPercentage}}">
+                            <label for="WinPercentageGroup">Win Percentage</label>
+                        </div>
+                        {% else %}
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="WinPercentageGroup"
+                                placeholder="Win Percentage" value="{{item.WinPercentage}}" disabled>
+                            <label for="WinPercentageGroup">Win Percentage</label>
+                        </div>
+                        {% endif %}
+                        <button class="btn btn-primary mb-1" type="submit">Submit Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if current_user.has_permission("edit_item_image") %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card bg-dark border-white">
+            <h3 class="card-header border-white text-white">Upload Icon Image</h3>
+            <div class="card-body weird-margins" id="colorsContainer">
+                <form method="post" id="exportForm" enctype=multipart/form-data>
+                    <div class="mb-3">
+                        <label for="DescriptionGroup">.png or .gif File</label>
+                        <input type="file" class="form-control" name='file' id="DescriptionGroup"
+                            placeholder="Select .png or .gif file">
+                    </div>
+                    <button type="submit" name="FileForm" class="btn btn-danger">
+                        Upload Data
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <img height='108' width='108'
+                        src="{{url_for('static', filename='images/Icons/' ~ item.id ~ '.' ~ item.ImageType)}}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

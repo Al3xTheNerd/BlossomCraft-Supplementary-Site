@@ -1,0 +1,68 @@
+{% extends "core_layout.html" %}
+{% block extra_navbars %}
+{# Public Navbar First #}
+<nav class="navbar navbar-dark navbar-expand-sm" style="background-color: var(--bs-gray-800)">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% for loc, name in [
+                    ('ItemListing.Index', "Index"),
+                    ('ItemListing.AllItems', "All Items"),
+                    ('ItemListing.AllCrates', "All Crates"),
+                    ('ItemListing.AllTags', "All Tags"),
+                    ('ItemListing.AllSets', "All Sets"),
+                    ('ItemListing.Stats', "Stats"),
+                    ('ItemListing.Search', "Search"),
+                    
+
+                    ] %}
+                {% if request.path == url_for(loc) %}
+                <li class="nav-item"><a class="nav-link active" aria-current="page"
+                        href="{{ url_for(loc) }}">{{name}}</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for(loc) }}">{{name}}</a></li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            <div class="right-side d-flex justify-content-end">
+                <form class="d-flex" method="post" action="{{ url_for('ItemListing.Index')}}">
+                    <input class="form-control me-2" name="search" type="search" placeholder="Search"
+                        aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+{% if current_user.is_authenticated %}
+{# Admin Navbar Next #}
+<nav class="navbar navbar-dark navbar-expand-sm" style="background-color: var(--bs-gray-700)">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% for loc, name, permission in [
+                    ('ItemListing.AddItem', "Add Item", "view_add_item"),
+                    ('ItemListing.ItemList', "Item List", "view_item_list"),
+                    ('ItemListing.ItemOrder', "Manage Item Order", "view_reorder_items"),
+                    ('ItemListing.ManageCrates', "Manage Crates", "view_manage_crate"),
+                    ('ItemListing.SetManagement', "Set Management", "view_set_management"),
+                    ('ItemListing.MissingImages', "Missing Images", "view_missing_images")
+                    ] %}
+                    {% if current_user.has_permission(permission) %}
+                        <li class="nav-item"><a class="nav-link{% if request.path == url_for(loc) %} active{%endif%}" aria-current="page" href="{{ url_for(loc) }}">{{name}}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endif %}
+{% endblock %}

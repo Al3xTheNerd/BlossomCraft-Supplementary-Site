@@ -1,0 +1,59 @@
+{% set Title = "Set Bio" %}
+{% set UseSEO = false %}
+{% set Description = "Set your bio." %}
+{% set UseTracker = false %}
+{% extends "Configuration/IntegratedLayout.html" %}
+{% block styles %}
+<style>
+    .input-group-text,
+    .form-select {
+        font-size: 16px;
+    }
+
+    div.input-group input.form-control {
+        font-size: 16px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row gx-3 gy-3">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Manage Profile Picture</h3>
+            <div class="card-body weird-margins" id="colorsContainer">
+                <form method="POST" action="">
+                    <div class="input-group mt-3">
+                        <span class="input-group-text">Bio</span>
+                        <textarea class="form-control" aria-label="Bio" rows="4" name="Bio" maxlength="4000"
+                            id="bioInput">{{current_user.bio}}</textarea>
+                    </div>
+                    <div class="form-text text-end" id="bioCounter">
+                        0 / 4000 characters
+                    </div>
+                    <button class="btn btn-primary mb-1" type="submit">Signup</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    const bioInput = document.getElementById("bioInput");
+    const bioCounter = document.getElementById("bioCounter");
+
+    function updateBioCounter() {
+        const length = bioInput.value.length;
+        const maxLength = bioInput.maxLength;
+
+        bioCounter.textContent = `${length} / ${maxLength} characters`;
+
+        bioCounter.classList.toggle("text-warning", length >= maxLength * (3 / 4));
+        bioCounter.classList.toggle("text-danger", length >= maxLength);
+    }
+
+    bioInput.addEventListener("input", updateBioCounter);
+    updateBioCounter();
+
+</script>
+{% endblock %}

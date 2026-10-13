@@ -1,0 +1,38 @@
+{% set Title = "Missing Images" %}
+{% set UseSEO = false %}
+{% set Description = "All items missing their icon image." %}
+{% set UseTracker = false %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Missing Images</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Any items with missing images for whatever reason will be listed below.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3 gy-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Missing Icons</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% if MissingIcons %}
+                    {% for item in MissingIcons %}
+                    <li class="list-group-item mc-white bg-dark"><a href = "{{url_for('ItemListing.ManageItem', itemID=item.id)}}">{{ item.id }}</a> - {{ item.ItemName | safe }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item mc-white bg-dark">Good job! All icons exist!</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

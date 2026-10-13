@@ -1,0 +1,56 @@
+{% set Title = "General Info" %}
+{% set UseSEO = true %}
+{% set Description = "A listing of all Items on " ~ ServerName ~ ", as well as various tools to assist in your time
+playing." %}
+{% set UseTracker = true %}
+{% extends "IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h2 class="card-title">{{ ServerName }} Supplementary Site</h2>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This website is a supplementary site, designed to assist you
+                    as you play on {{
+                    ServerName }}! You can use the site to do many things from viewing every item on the server,
+                    tracking your item collection, making gradients, and more!</li>
+                <li class="list-group-item mc-gold bg-dark">Below is a list of features you can expect to find on the
+                    website.</li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("ItemListing.Index")}}'>Item List</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Sort through every Crate item on {{ ServerName }}!</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("MiscellaneousItemList.Index")}}'>Miscellaneous Item List</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">A list of all of the random items that aren't actually in a crate, such as furniture, plushies, and cosmetics!</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("SinglePageTools.Index")}}'>Single Page Tools</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">A collection of some small tools to help you with various things, such as item tracking, inventory planning, and plenty more!</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

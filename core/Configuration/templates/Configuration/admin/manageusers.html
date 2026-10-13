@@ -1,0 +1,57 @@
+{% set Title = "Manage Users" %}
+{% set UseSEO = true %}
+{% set Description = "Manage the list of users on the site." %}
+{% set UseTracker = true %}
+{% extends "Configuration/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Manage Users</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to check/set the permissions of a user.
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    <div class="col-12">
+        <div class="text-info">
+            <div class="d-flex align-items-start">
+                <div class="text-info w-100">
+                    <table class="table table-dark extra-pad-top w-100 rounded">
+                        <thead>
+                            <tr>
+                                <th scope="col">id</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Permissions Integer</th>
+                                <th scope="col">Staff Role</th>
+                                <th scope="col">Maintainer</th>
+                                <th scope="col">Manage User</th>
+                                <th scope="col">Password</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td scope="col"><span id='id'>{{user.id}}</span></td>
+                                <td scope="col">{{user.username}}</td>
+                                <td scope="col">{{user.permissions}}</td>
+                                <td scope="col">{{user.staffRole}}</td>
+                                <td scope="col">{{user.maintainerStatus}}</td>
+                                <td scope="col"><a href='{{url_for('Configuration.ManageUser', userID=user.id)}}'>Manage User</a></td>
+                                <td scope="col"><a href='{{url_for('Configuration.ForceResetPass', userID=user.id)}}'>Force reset password.</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

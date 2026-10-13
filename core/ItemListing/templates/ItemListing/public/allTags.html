@@ -1,0 +1,37 @@
+{% set Title = "All Tags" %}
+{% set UseSEO = true %}
+{% set Description = "All Tags currently on the site." %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Tags</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Tags are sorted below, based on their type.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3 gy-3">
+    {% for category, catTags in tags.items() %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{category}}</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-white bg-dark"><a href="{{ url_for('ItemListing.SingleTag', cat=category, tag='all') }}">All</a></li>
+                {% for tag in catTags %}
+                <li class="list-group-item mc-white bg-dark"><a href="{{ url_for('ItemListing.SingleTag', cat=category, tag=tag) }}">{{tag}}</a><code>({{stats[tag]}})</code></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 

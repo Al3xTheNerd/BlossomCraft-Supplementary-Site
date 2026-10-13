@@ -1,0 +1,64 @@
+{% set Title = "All Sets" %}
+{% set UseSEO = true %}
+{% set Description = "All sets currently on the server." %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Sets</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Some items are grouped together, the main reasons this will be used, is for Armor Sets, or for items used in an Upgrade process.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3 gy-3">
+{% if sets[""] %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Unsorted Sets</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for set in sets[""] %}
+                    <li class="list-group-item mc-white bg-dark"><a href="{{ url_for('ItemListing.SingleSet', setID=set.id) }}">{{set.Name}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endif %}
+{% if sets["Armor Set"] %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Armor Sets</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for set in sets["Armor Set"] %}
+                    <li class="list-group-item mc-white bg-dark"><a href="{{ url_for('ItemListing.SingleSet', setID=set.id) }}">{{set.Name}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endif %}
+{% if sets["Upgrade"] %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Upgrade Related Sets</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for set in sets["Upgrade"] %}
+                    <li class="list-group-item mc-white bg-dark"><a href="{{ url_for('ItemListing.SingleSet', setID=set.id) }}">{{set.Name}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endif %}
+</div>
+{% endblock %}

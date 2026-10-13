@@ -1,0 +1,25 @@
+{% set Title = "Set: " ~ set.Name %}
+{% set UseSEO = true %}
+{% set Description = "View extra details on " ~ set.Name %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{set.Name}}</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% if set.Type != "" %}
+                <li class="list-group-item mc-gold bg-dark">Category: {{ set.Type }}</li>
+                {% endif %}
+                {% if set.SetDescription %}
+                <li class="list-group-item mc-gold bg-dark">Notes/Comments: {{ set.SetDescription }}</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+    {% include 'itemDisplay.html' %}
+{% endblock %}

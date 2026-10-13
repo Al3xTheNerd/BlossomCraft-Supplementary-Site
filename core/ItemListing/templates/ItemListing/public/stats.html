@@ -1,0 +1,55 @@
+{% set Title = "Item Stats" %}
+{% set UseSEO = true %}
+{% set Description = "Stats on how many items exist." %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+
+    <div class="row gx-3 gy-3">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+            <div class="give-preview-text-outer">
+                <div class="give-preview-text w-100">
+                    <div class="give-preview-text-inner text-start">
+                        <span style="font-weight: bold; color: #7A2F8A; ">☆ </span><span
+                            style="font-weight: bold; color: #873798; ">I</span><span
+                            style="font-weight: bold; color: #8E3BA0; ">t</span><span
+                            style="font-weight: bold; color: #953FA7; ">e</span><span
+                            style="font-weight: bold; color: #9B43AE; ">m </span><span
+                            style="font-weight: bold; color: #A94BBD; ">S</span><span
+                            style="font-weight: bold; color: #AF4FC4; ">t</span><span
+                            style="font-weight: bold; color: #B653CB; ">a</span><span
+                            style="font-weight: bold; color: #AF4FC4; ">t</span><span
+                            style="font-weight: bold; color: #A94BBD; ">i</span><span
+                            style="font-weight: bold; color: #A247B5; ">s</span><span
+                            style="font-weight: bold; color: #9B43AE; ">t</span><span
+                            style="font-weight: bold; color: #953FA7; ">i</span><span
+                            style="font-weight: bold; color: #8E3BA0; ">c</span><span
+                            style="font-weight: bold; color: #873798; ">s </span><span
+                            style="font-weight: bold; color: #7A2F8A; ">☆</span>
+                        {% for tag, number in stats.items() %}
+                        <div><span class="mc-green">{{tag}}s: {{number}}</span></div>
+                        {% endfor %}
+                        <div><span style="color: #AAAAAA; ">- - - - - - ▶ </span><span
+                                style="color: #7A2F8A; ">S</span><span style="color: #863697; ">t</span><span
+                                style="color: #923DA4; ">a</span><span style="color: #9E45B1; ">t</span><span
+                                style="color: #AA4CBE; ">i</span><span style="color: #B653CB; ">s</span><span
+                                style="color: #A74ABB; ">t</span><span style="color: #9841AB; ">i</span><span
+                                style="color: #89389A; ">c</span><span style="color: #7A2F8A; ">s</span><span
+                                style="color: #AAAAAA; "> ◀ - - - - - -</span></div>
+                        <div><br></div>
+                        <div><span style="color: #FFFF55; ">There are {{ total }} total {{ ServerItemName }}!</span></div>
+                        <div><br></div>
+                        <div><span style="color: #AAAAAA; ">- - - - - - - - - - - - - - - - - - - - -</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+{% endblock %}

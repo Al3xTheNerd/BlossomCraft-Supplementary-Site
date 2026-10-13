@@ -1,0 +1,171 @@
+{% set Title = "Manage User | " ~ user.username %}
+{% set UseSEO = true %}
+{% set Description = "Manage the permissions of a user." %}
+{% set UseTracker = true %}
+{% extends "Configuration/IntegratedLayout.html" %}
+{% block content %}
+<style>
+    .input-group-text,
+    .form-select {
+        font-size: 16px;
+    }
+
+    div.input-group input.form-control {
+        font-size: 16px;
+    }
+</style>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <h3 class="card-header border-white">Manage <code>{{user.username}}</code></h3>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Set General Info</h3>
+            <div class="card-body weird-margins" id="colorsContainer">
+                <form method="post">
+                    <div class="input-group">
+                        <label class="input-group-text">Username</label>
+                        <input type="text" class="form-control" placeholder="{{user.username}}"
+                            value="{{user.username}}" name="Username">
+                    </div>
+                    <div class="input-group mt-3">
+                        <label class="input-group-text">Staff Role</label>
+                        <select class="form-select" id="StaffRole" name="StaffRole">
+                            {% for role in [
+                            none,
+                            "Helper",
+                            "Moderator",
+                            "Senior Moderator",
+                            "Admin",
+                            "Owner",
+                            "On Break",
+                            "Developer",
+                            "Social Media"] %}
+                            {% if role is none %}
+                            <option value="" {% if user.staffRole==role %} selected{%endif%}>Not a staff member.
+                            </option>
+                            {% else %}
+                            <option value="{{role}}" {% if user.staffRole==role %} selected{%endif%}>{{role}}</option>
+                            {% endif %}
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="input-group mt-3">
+                        <label class="input-group-text">Maintainer Role</label>
+                        <select class="form-select" id="MaintainerRole" name="MaintainerRole">
+                            {% for role in [
+                            none,
+                            "Developer",
+                            "Designer"] %}
+                            {% if role is none %}
+                            <option value="" {% if user.maintainerStatus==role %} selected{%endif%}>Not a maintainer.
+                            </option>
+                            {% else %}
+                            <option value="{{role}}" {% if user.maintainerStatus==role %} selected{%endif%}>{{role}}
+                            </option>
+                            {% endif %}
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="input-group mt-3">
+                        <label class="input-group-text">Level</label>
+                        <select class="form-select" id="GeneralPermLevel" name="GeneralPermLevel" {%if current_user.username == user.username%} disabled{% endif %}>
+                            {% for level, label in [
+                            (90, "Superuser (bypass permission checks)"),
+                            (10, "Verified User (access to set bio/profile picture) (default)"),
+                            (0, "Restricted User (no access to anything)")] %}
+                            <option value="{{level}}" {% if current_user.permissions <=level %} disabled{%endif%}{% if
+                                user.permissions==level %} selected{%endif%}>{{label}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="input-group mt-3">
+                        <span class="input-group-text">Bio</span>
+                        <textarea class="form-control" aria-label="Bio" rows="4" name="Bio" maxlength="4000"
+                            id="bioInput">{{user.bio}}</textarea>
+                    </div>
+                    <div class="form-text text-end" id="bioCounter">
+                        0 / 4000 characters
+                    </div>
+                    <button type="submit" class="btn btn-danger mt-3" name="WhichAction" value="GeneralInfo">
+                        Update General Info
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Manage Profile Picture</h3>
+            <div class="card-body weird-margins" id="colorsContainer">
+                <form method="post">
+                    <img class="img-fluid" style="max-width: 100%" src="{{user.profile_image()}}" alt="{{user.username}}'s Face">
+                    <button type="submit" class="btn btn-danger mt-3" name="WhichAction" value="RevokePicture">
+                        Revoke Profile Picture
+                    </button>
+                    <button type="submit" class="btn btn-success mt-3" name="WhichAction" value="AllowPicture">
+                        Allow Profile Picture
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    <div class="col-12">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Set Permissions</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Set the granular permissions of this user.</li>
+            </ul>
+            <div class="card-body weird-margins" id="colorsContainer">
+                <form class="row g-3" method="post">
+                    {% for permGroup, perms in registeredPerms.items() %}
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+                        <h4>{{permGroup}}</h4>
+                        {% for perm in perms %}
+                        {% if perm is not none %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="{{perm[0]}}" name="{{perm[0]}}" {%if currentNodes[perm[0]]%} checked{%endif%}>
+                            <label class="form-check-label" for="{{perm[0]}}">{{ perm[1] | safe}}</label>
+                        </div>
+                        {% else %}
+                        <hr>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {%endfor%}
+                    <button type="submit" class="btn btn-danger mt-3" name="WhichAction" value="Permissions">
+                        Update Permissions
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    const bioInput = document.getElementById("bioInput");
+    const bioCounter = document.getElementById("bioCounter");
+
+    function updateBioCounter() {
+        const length = bioInput.value.length;
+        const maxLength = bioInput.maxLength;
+
+        bioCounter.textContent = `${length} / ${maxLength} characters`;
+
+        bioCounter.classList.toggle("text-warning", length >= maxLength * (3 / 4));
+        bioCounter.classList.toggle("text-danger", length >= maxLength);
+    }
+
+    bioInput.addEventListener("input", updateBioCounter);
+    updateBioCounter();
+
+</script>
+{% endblock %}

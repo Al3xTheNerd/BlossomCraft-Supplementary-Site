@@ -1,0 +1,37 @@
+{% set Title = "All Crates" %}
+{% set UseSEO = true %}
+{% set Description = "All crates currently on the server." %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Crates</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Crates are sorted below, based on their type, and release date.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3 gy-3">
+    {% for Type, Crates in SortedCrates.items() %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ Type }}</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for crate in Crates %}
+                <li class="list-group-item mc-white bg-dark"><a href="{{ url_for('ItemListing.SingleCrate', crateTag=crate.URLTag) }}">{{crate.CrateName}}</a> - {{crate.ReleaseDate}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+{% endblock %}

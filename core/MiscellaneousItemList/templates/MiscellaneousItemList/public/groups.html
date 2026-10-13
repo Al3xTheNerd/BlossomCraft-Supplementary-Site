@@ -1,0 +1,41 @@
+{% set Title = "Miscellaneous Groups" %}
+{% set UseSEO = true %}
+{% set Description = "A list of all Miscellaneous Item collections." %}
+{% set UseTracker = true %}
+{% extends "MiscellaneousItemList/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Miscellaneous Groups</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Miscellaneous Groups are sorted below, based on their type, and release date.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3 gy-3">
+    {% for Type, Groups in SortedGroups.items() %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                {% if Type == "" %}
+                    <h4 class="card-title">Unsorted</h4>
+                {% else %}
+                <h4 class="card-title">{{ Type }}</h4>
+                {% endif %}
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for group in Groups %}
+                <li class="list-group-item mc-white bg-dark"><a href="{{ url_for('MiscellaneousItemList.SingleGroup', groupTag=group.URLTag) }}">{{group.GroupName}}</a> - {{group.ReleaseDate}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+{% endblock %}

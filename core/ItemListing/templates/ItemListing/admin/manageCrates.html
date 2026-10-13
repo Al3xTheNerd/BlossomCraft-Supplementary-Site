@@ -1,0 +1,151 @@
+{% set Title = "Manage Crates" %}
+{% set UseSEO = false %}
+{% set Description = "Manage the list of crates on the server." %}
+{% set UseTracker = false %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Manage Crates</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to create, edit, or delete crates from the database.</li>
+                <li class="list-group-item mc-gold bg-dark">Crate Tag must be unique, so be mindful of that when creating a new crate.</li>
+                <li class="list-group-item mc-gold bg-dark">Pressing <code>Delete Crate</code> will delete the crate, and all items associated with it from the database. I have not needed this once, so I cannot imagine a situation where you will.</li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    {% if current_user.has_permission("edit_crate_existing") %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="">
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="CrateSelectEdit">Crate</label>
+                            <select name='crate' class="form-select" id="CrateSelectEdit" onchange="updateCrateEdit()">
+                                {% if currentCrates is none %}
+                                <option value="">No Current Crates</option>
+                                {% else %}
+                                {% for id, details in currentCrates.items() %}
+                                <option value="{{ id }}">{{ details["CrateName"] }}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='CrateName' id="CrateNameGroup"
+                                placeholder="Crate Name">
+                            <label for="CrateNameGroup">Crate Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='ReleaseDate' id="ReleaseDateGroup"
+                                placeholder="Release Date">
+                            <label for="ReleaseDateGroup">Release Date</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='CrateTag' id="CrateTagGroup"
+                                placeholder="Crate Tag">
+                            <label for="CrateTagGroup">Crate Tag</label>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="CrateSelectEdit">Crate Type</label>
+                            <select name='CrateType' class="form-select" id="CrateTypeSelect">
+                                <option value="Seasonal">Seasonal</option>
+                                <option value="Side">Side</option>
+                                <option value="Misc">Misc</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary mb-1" name="Edit" type="submit">Edit Crate!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if current_user.has_permission("create_crate") %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='CrateName' id="CrateNameGroup"
+                                placeholder="Crate Name">
+                            <label for="CrateNameGroup">Crate Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='ReleaseDate' id="ReleaseDateGroup"
+                                placeholder="Release Date">
+                            <label for="ReleaseDateGroup">Release Date</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='CrateTag' id="CrateTagGroup"
+                                placeholder="Crate Tag">
+                            <label for="CrateTagGroup">Crate Tag</label>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="CrateSelectEdit">Crate Type</label>
+                            <select name='CrateType' class="form-select" id="CrateTypeSelect">
+                                <option value="Seasonal">Seasonal</option>
+                                <option value="Side">Side</option>
+                                <option value="Misc">Misc</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary mb-1" name="New" type="submit">Add Crate!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if current_user.has_permission("delete_crate") %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="">
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="CrateSelectEdit">Crate</label>
+                            <select name='crate' class="form-select" id="CrateSelectEdit" onchange="updateCrateEdit()">
+                                {% if currentCrates is none %}
+                                <option value="">No Current Crates</option>
+                                {% else %}
+                                {% for id, details in currentCrates.items() %}
+                                <option value="{{ id }}">{{ details["CrateName"] }}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <button class="btn btn-primary mb-1" name="Delete" type="submit">Delete Crate.</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+</div>
+<script>
+    const currentCrates = {{ currentCrates | tojson }};
+    function updateCrateEdit() {
+        selectedValue = document.getElementById("CrateSelectEdit").value;
+        document.getElementById("CrateNameGroup").value = currentCrates[selectedValue]["CrateName"];
+        document.getElementById("ReleaseDateGroup").value = currentCrates[selectedValue]["ReleaseDate"];
+        document.getElementById("CrateTagGroup").value = currentCrates[selectedValue]["URLTag"];
+        document.getElementById("CrateTypeSelect").value = currentCrates[selectedValue]["CrateType"];
+        console.log(currentCrates[selectedValue])
+    }
+    updateCrateEdit()
+</script>
+
+
+
+
+
+{% endblock %}

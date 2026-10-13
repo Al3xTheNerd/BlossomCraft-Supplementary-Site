@@ -1,0 +1,30 @@
+{% set Title = "Miscellaneous Item List" %}
+{% set UseSEO = true %}
+{% set Description = "A list of the various non-crate items on the server." %}
+{% set UseTracker = true %}
+{% extends "MiscellaneousItemList/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h2 class="card-title">Miscellaneous Item List</h2>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This is a list of <i>almost</i> every non-crate item on the server!</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("MiscellaneousItemList.GroupList")}}'>Group List</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">The list of groups everything is sorted into.</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

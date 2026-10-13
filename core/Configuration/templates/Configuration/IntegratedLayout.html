@@ -1,0 +1,45 @@
+{% extends "core_layout.html" %}
+{% block extra_navbars %}
+{% if current_user.is_authenticated %}
+{# Public Navbar First #}
+<nav class="navbar navbar-dark navbar-expand-sm" style="background-color: var(--bs-gray-800)">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% for loc, name, permission in [
+                    ('Configuration.Index', "Index", none),
+                    ('Configuration.ResetPass', 'Reset Password', none),
+                    ('Configuration.SetBio', "Set Bio", none)
+                    ] %}
+                    {% if current_user.has_permission(permission) %}
+                        <li class="nav-item"><a class="nav-link{% if request.path == url_for(loc) %} active{%endif%}" aria-current="page" href="{{ url_for(loc) }}">{{name}}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{# Admin Navbar Next #}
+
+<nav class="navbar navbar-dark navbar-expand-sm" style="background-color: var(--bs-gray-700)">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100">
+
+                {% if current_user.permissions >= 90 %}
+                <li class="nav-item"><a class="nav-link{% if request.path == url_for('Configuration.ManageUsers') %} active{%endif%}" aria-current="page" href="{{ url_for('Configuration.ManageUsers') }}">Manage Users</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endif %}
+{% endblock %}

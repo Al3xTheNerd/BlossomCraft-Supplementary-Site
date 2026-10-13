@@ -1,0 +1,63 @@
+{% set Title = "Site Configuration" %}
+{% set UseSEO = false %}
+{% set Description = "Portal for site configuration." %}
+{% set UseTracker = true %}
+{% extends "Configuration/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h2 class="card-title">Site Management</h2>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This is where you manage your account, as well as the site configuration.</li>
+            </ul>
+        </div>
+    </div>
+    {% if not current_user.is_authenticated %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("Configuration.Login")}}'>Login</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Access your account.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("Configuration.Signup")}}'>Signup</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Create an account.</li>
+            </ul>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("Configuration.ResetPass")}}'>Reset Password</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Reset your password.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("Configuration.Signup")}}'>Set Bio</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Set your bio.</li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

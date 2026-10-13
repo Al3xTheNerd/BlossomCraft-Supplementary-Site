@@ -1,0 +1,164 @@
+{% set Title = "Manage Misc. Groups" %}
+{% set UseSEO = false %}
+{% set Description = "Manage the Miscellaneous Item Groups" %}
+{% set UseTracker = false %}
+{% extends "MiscellaneousItemList/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Manage Groups</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to create, edit, or delete groups from the database.</li>
+                <li class="list-group-item mc-gold bg-dark">Group Tag must be unique, so be mindful of that when creating a new group.</li>
+                <li class="list-group-item mc-gold bg-dark">Pressing <code>Delete Group</code> will delete the group, and all items associated with it from the database. I have not needed this once, so I cannot imagine a situation where you will.</li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    {% if current_user.has_permission("edit_misc_group_existing") %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="">
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="GroupSelectEdit">Group</label>
+                            <select name='Group' class="form-select" id="GroupSelectEdit" onchange="updateGroupEdit()">
+                                {% if currentGroups is none %}
+                                <option value="">No Current Groups</option>
+                                {% else %}
+                                {% for id, details in currentGroups.items() %}
+                                <option value="{{ id }}">{{ details["GroupName"] }}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='GroupName' id="GroupNameGroup"
+                                placeholder="Group Name">
+                            <label for="GroupNameGroup">Group Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='ReleaseDate' id="ReleaseDateGroup"
+                                placeholder="Release Date">
+                            <label for="ReleaseDateGroup">Release Date</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='GroupTag' id="GroupTagGroup"
+                                placeholder="Group Tag">
+                            <label for="GroupTagGroup">Group Tag</label>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="GroupType">Group Type</label>
+                            <select name='GroupType' class="form-select" id="GroupTypeSelect">
+                                <option value="">None</option>
+                                {% for groupType in validGroupTypes %}
+                                    <option value="{{groupType}}">{{groupType}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" name='Notes' placeholder="Item Notes" id="GroupNotesText"
+                                style="height: 100px"></textarea>
+                            <label for="NotesGroup">Notes</label>
+                        </div>
+                        <button class="btn btn-primary mb-1" name="Edit" type="submit">Edit Group!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if current_user.has_permission("create_misc_group") %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='GroupName' id="GroupNameGroup"
+                                placeholder="Group Name">
+                            <label for="GroupNameGroup">Group Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='ReleaseDate' id="ReleaseDateGroup"
+                                placeholder="Release Date">
+                            <label for="ReleaseDateGroup">Release Date</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name='GroupTag' id="GroupTagGroup"
+                                placeholder="Group Tag">
+                            <label for="GroupTagGroup">Group Tag</label>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="GroupType">Group Type</label>
+                            <select name='GroupType' class="form-select" id="GroupType">
+                                <option value="">None</option>
+                                {% for groupType in validGroupTypes %}
+                                    <option value="{{groupType}}">{{groupType}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" name='Notes' placeholder="Item Notes" id="NotesGroup"
+                                style="height: 100px"></textarea>
+                            <label for="NotesGroup">Notes</label>
+                        </div>
+                        <button class="btn btn-primary mb-1" name="New" type="submit">Add Group!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if current_user.has_permission("delete_misc_group") %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="">
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="GroupSelectEdit">Group</label>
+                            <select name='Group' class="form-select" id="GroupSelectEdit" onchange="updateGroupEdit()">
+                                {% if currentGroups is none %}
+                                <option value="">No Current Groups</option>
+                                {% else %}
+                                {% for id, details in currentGroups.items() %}
+                                <option value="{{ id }}">{{ details["GroupName"] }}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <button class="btn btn-primary mb-1" name="Delete" type="submit">Delete Group.</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+</div>
+<script>
+    const currentGroups = {{ currentGroups | tojson }};
+    function updateGroupEdit() {
+        selectedValue = document.getElementById("GroupSelectEdit").value;
+        document.getElementById("GroupNameGroup").value = currentGroups[selectedValue]["GroupName"];
+        document.getElementById("ReleaseDateGroup").value = currentGroups[selectedValue]["ReleaseDate"];
+        document.getElementById("GroupTagGroup").value = currentGroups[selectedValue]["URLTag"];
+        document.getElementById("GroupTypeSelect").value = currentGroups[selectedValue]["GroupType"];
+        document.getElementById("GroupNotesText").value = currentGroups[selectedValue]["Notes"];
+        console.log(currentGroups[selectedValue])
+    }
+    updateGroupEdit()
+</script>
+
+
+
+
+
+{% endblock %}

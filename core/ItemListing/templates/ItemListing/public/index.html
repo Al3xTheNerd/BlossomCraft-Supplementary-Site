@@ -1,0 +1,72 @@
+{% set Title = "Item List" %}
+{% set UseSEO = true %}
+{% set Description = "Entrypoint for the Item List" %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+{% if Items is not none %}
+{% include 'itemDisplay.html' %}
+{% else %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h2 class="card-title">{{ ServerItemName }} List</h2>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This website is a complete list of every custom item on {{
+                    ServerName }}, use it to track your item collection, discover new items to collect, or do some
+                    pretend gambling!</li>
+                <li class="list-group-item mc-gold bg-dark">Below is a list of features you can expect to find on the
+                    website.</li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("ItemListing.AllCrates")}}'>Crates</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Check what items are in each crate, as well as get the
+                    release date of every crate!</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("ItemListing.AllTags")}}'>Tags</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Get a list of all items under a given tag, such as a list of
+                    all infinite blocks on the server, or all items that give the speed attribute.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("ItemListing.AllSets")}}'>Sets</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Sets are going to either be Armor sets with a set bonus, or
+                    groups of items that pair so well together that nearly everybody knows the combination.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("ItemListing.Stats")}}'>Site Stats</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Ever been curious about the total number of {{ ServerItemName }}? Or perhaps how many infinite blocks exist? You can check that on this screen.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+{% endblock %}

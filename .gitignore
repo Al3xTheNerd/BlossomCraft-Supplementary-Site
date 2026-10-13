@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+atn.py
+.VSCodeCounter
+database.db
+.vscode/
+/core/_Shared/static/images/Icons/**
+!/core/_Shared/static/images/Icons/.gitkeep
+
+/core/_Shared/static/images/Descriptions/**
+!/core/_Shared/static/images/Descriptions/.gitkeep
+
+/core/_Shared/static/images/Misc_Descriptions/**
+!/core/_Shared/static/images/Misc_Descriptions/.gitkeep
+
+/core/_Shared/static/images/Misc_Icons/**
+!/core/_Shared/static/images/Misc_Icons/.gitkeep

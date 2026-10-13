@@ -1,0 +1,36 @@
+    <nav class="navbar navbar-dark navbar-expand-sm bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('_Shared.Index') }}">
+                <img src="{{ url_for('static', filename='images/icon.webp') }}" width="32" height="32"
+                    alt="{{ ServerName }} Logo.">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContentCore" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContentCore">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100">
+                    {% for loc, name, path in [
+                        ('ItemListing.Index', "Item List", "/items"),
+                        ('MiscellaneousItemList.Index', "Misc. Item List", "/miscitems"),
+                        ('SinglePageTools.Index', "Single Page Tools", "/tools")
+                        ] %}
+                    {% if request.path.startswith(path) %}
+                    <li class="nav-item"><a class="nav-link active" aria-current="page"
+                            href="{{ url_for(loc) }}">{{name}}</a></li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for(loc) }}">{{name}}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link {%if request.path.startswith('/a')%} active{%endif%}" href="{{url_for('Configuration.Index')}}">Site Admin</a></li>
+                        <li class="nav-item ms-auto"><a class="nav-link {%if request.path == url_for('Configuration.Logout')%} active{%endif%}" href="{{url_for('Configuration.Logout')}}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item ms-auto"><a class="nav-link {%if request.path == url_for('Configuration.Signup')%} active{%endif%}" href="{{url_for('Configuration.Signup')}}">Signup</a></li>
+                        <li class="nav-item"><a class="nav-link {%if request.path == url_for('Configuration.Login')%} active{%endif%}" href="{{url_for('Configuration.Login')}}">Login</a></li>
+                    {%endif%}
+                </ul>
+            </div>
+        </div>
+    </nav>

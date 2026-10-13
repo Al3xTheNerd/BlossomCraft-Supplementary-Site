@@ -1,0 +1,33 @@
+{% extends "core_layout.html" %}
+{% block extra_navbars %}
+<nav class="navbar navbar-dark navbar-expand-sm" style="background-color: var(--bs-gray-800)">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% for loc, name in [
+                    ('SinglePageTools.Index', "Index"),
+                    ('SinglePageTools.JobsPayouts', "Jobs Pay Calculator"), 
+                    ('SinglePageTools.BlockSpeed', "Block Break Speed Calculator"),
+                    ('SinglePageTools.ItemTrackerRoute', "Item Tracker"),
+                    ('SinglePageTools.MiscItemTracker', "Misc. Item Tracker"),
+                    ('SinglePageTools.InventoryPlanner', "Inventory Planner"),
+                    ('SinglePageTools.GradientMaker', "Gradient Maker"),
+                    ('SinglePageTools.Gambling', "Gamble"),
+                    
+                    ] %}
+                {% if request.path == url_for(loc) %}
+                <li class="nav-item"><a class="nav-link active" aria-current="page"
+                        href="{{ url_for(loc) }}">{{name}}</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for(loc) }}">{{name}}</a></li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}

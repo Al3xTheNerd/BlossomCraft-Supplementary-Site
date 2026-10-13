@@ -1,0 +1,21 @@
+
+<style>.tooltip-inner {
+    white-space: pre-wrap;
+    max-width: none !important;
+}</style>
+<div class="row gx-3 gy-3">
+    <!--<div class="row" data-masonry='{"percentPosition": true }'>-->
+    {% for item in Items %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 hard-wrap">
+        <a style="display: block;" href="{%if not current_user.has_permission('view_misc_item_list')%}{{url_for('ItemListing.SingleItem', itemID=item.id)}}{%else%}{{url_for('ItemListing.ManageItem', itemID = item.id)}}{%endif%}">
+            <div class="give-preview-text-outer marker" id="{{ item.id }}" data-bs-toggle="tooltip"data-bs-html="true" data-bs-placement="bottom" data-bs-title="<img height='216' width='216' src='{{url_for('static', filename='images/Icons/' ~ item.id ~ '.' ~ item.ImageType)}}'><br>{{item.Notes}}">
+                <div class="give-preview-text w-100">
+                    <div class="give-preview-text-inner text-start">
+                        {{ item.ItemHTML | safe }}
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>

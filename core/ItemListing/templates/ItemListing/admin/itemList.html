@@ -1,0 +1,103 @@
+{% set Title = "Item List" %}
+{% set UseSEO = false %}
+{% set Description = "A list of all the items on the server." %}
+{% set UseTracker = false %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Item List</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to edit, or delete items from the
+                    database.</li>
+                <li class="list-group-item mc-gold bg-dark">Click through the tabs to the left side of the screen to
+                    find the crate containing the item you would like to adjust. Then use your eyes to find the specific
+                    item.</li>
+                <li class="list-group-item mc-gold bg-dark">Press <code>Manage Item</code> to edit the tags of an item.
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+{% set keysList = currentItems.keys() | list %}
+<div class="row gx-3 gy-3">
+    <div class="col-12">
+        <div class="text-info">
+            <div class="d-flex align-items-start">
+                <div class="nav flex-column nav-pills me-3 bg-dark rounded" id="crate-tab" role="tablist"
+                    aria-orientation="vertical">
+                    {% for num in range(keysList | length) %}
+                    <button class="nav-link {% if num == 0 %}active{% endif %}" id="{{num}}-tab" data-bs-toggle="pill"
+                        data-bs-target="#a{{num}}" type="button" role="tab" aria-controls="a{{num}}"
+                        aria-selected="true">{{ keysList[num] }} ({{num + 1}})</button>
+                    {% endfor %}
+                </div>
+                <div class="tab-content w-100" id="crate-tabContent">
+                    {% for num in range(keysList | length) %}
+                    <div class="tab-pane fade {% if num == 0 %}show active{% endif %}" id="a{{num}}" role="tabpanel"
+                        aria-labelledby="{{num}}-tab">
+                        <div class="text-info">
+                            <table class="table table-dark table-striped extra-pad-top w-100 rounded">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Item Name ({{ currentItems[keysList[num]] | length}})</th>
+                                        <th scope="col">Bot Item Name</th>
+                                        <th scope="col">Primary Tag</th>
+                                        <th scope="col">Secondary Tag</th>
+                                        <th scope="col">Tertiary Tag</th>
+                                        <th scope="col">Quaternary Tag</th>
+                                        <th scope="col">Quinary Tag</th>
+                                        <th scope="col">Senary Tag</th>
+                                        <th scope="col">Septenary Tag</th>
+                                        <th scope="col">Order</th>
+                                        {% if current_user.has_permission("delete_item") %}
+                                        <th scope="col">Delete Item</th>
+                                        {% endif %}
+                                        {% if current_user.has_permission("view_edit_item") %}
+                                        <th scope="col">Manage Item</th>
+                                        {% endif %}
+                                        <th scope="col">id</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in currentItems[keysList[num]] %}
+                                    <tr data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
+                                        data-bs-title="<img height='108' width='108' src='{{url_for('static', filename='images/Icons/' ~ item.id ~ '.' ~ item.ImageType)}}'>">
+                                        <td scope="col">{{item.ItemNameHTML | safe}}</td>
+                                        <td scope="col">{{item.ItemName}}</td>
+                                        <td scope="col">{{item.TagPrimary}}</td>
+                                        <td scope="col">{{item.TagSecondary}}</td>
+                                        <td scope="col">{{item.TagTertiary}}</td>
+                                        <td scope="col">{{item.TagQuaternary}}</td>
+                                        <td scope="col">{{item.TagQuinary}}</td>
+                                        <td scope="col">{{item.TagSenary}}</td>
+                                        <td scope="col">{{item.TagSeptenary}}</td>
+                                        <td scope="col">{{item.ItemOrder}}</td>
+                                        {% if current_user.has_permission("delete_item") %}
+                                        <td scope="col"><a
+                                                href="{{url_for('ItemListing.DeleteItem', itemID = item.id)}}">Delete
+                                                Item</a></td>
+                                        {% endif %}
+                                        {% if current_user.has_permission("view_edit_item") %}
+                                        <td scope="col"><a
+                                                href="{{url_for('ItemListing.ManageItem', itemID = item.id)}}">Manage
+                                                Item</a></td>
+                                        {% endif %}
+                                        <td scope="col">{{item.id}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

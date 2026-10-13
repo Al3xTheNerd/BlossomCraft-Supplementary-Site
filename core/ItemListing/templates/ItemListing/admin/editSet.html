@@ -1,0 +1,274 @@
+{% set Title = "Edit Set" %}
+{% set UseSEO = false %}
+{% set Description = "Edit the data of a set." %}
+{% set UseTracker = false %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<style>
+    .input-group-text,
+    .form-select {
+        font-size: 16px;
+    }
+
+    div.input-group input.form-control {
+        font-size: 16px;
+    }
+</style>
+<div class="row gx-3 gy-3 mb-3 mt-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Set Creator</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Use this page to edit a set.</li>
+                <li class="list-group-item mc-gold bg-dark">You just follow the same steps as you do on the Create Set page, all the original information of the set will be prefilled for your convenience.</li>
+
+                
+
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card h-100 text-white bg-dark border-white">
+            <h3 class="card-header border-white">Tag Selection</h3>
+            <div class="card-body weird-margins" id="colorsContainer">
+                <div class="input-group">
+                    <label class="input-group-text">Item Tag</label>
+                    <select class="form-select" id="tagSelection" onchange="updateShownItems()">
+                        <option value="" selected>All</option>
+                        {% for tag in validTags %}
+                        <option value="{{tag}}">{{tag}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9">
+        <div class="card h-100 bg-dark border-white">
+            <h3 class="card-header border-white text-white">Tag Selection</h3>
+            <div class="card-body weird-margins" id="colorsContainer">
+                <form method="post" id="exportForm">
+                    <textarea class="form-control mb-3" id="importCode" name="importCode" value="" rows="1">{{oldSet.ItemList}}</textarea>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Set Type</label>
+                        <select class="form-select" name="type">
+                            <option value=""{% if oldSet.Type == "" %} selected{%endif%}>None</option>
+                            <option value="Upgrade"{% if oldSet.Type == "Upgrade" %} selected{%endif%}>Upgrade</option>
+                            <option value="Armor Set"{% if oldSet.Type == "Armor Set" %} selected{%endif%}>Armor Set</option>
+                        </select>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name='name' id="NameGroup"
+                            placeholder="Set Name" value="{{oldSet.Name}}">
+                        <label for="NameGroup">Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name='description' id="DescriptionGroup"
+                            placeholder="Set Description" value="{{oldSet.SetDescription}}">
+                        <label for="DescriptionGroup">Description</label>
+                    </div>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row text-center">
+            <div class="col-xs-3 col-sm-6 col-md-3 mt-3">
+                <button type="submit" form="exportForm" class="btn btn-danger">
+                    Upload Data
+                </button>
+            </div>
+            <div class="col-xs-3 col-sm-6 col-md-3 mt-3">
+                <button class="btn btn-danger" onclick="checkAll()">
+                    Check All
+                </button>
+            </div>
+            <div class="col-xs-3 col-sm-6 col-md-3 mt-3">
+                <button class="btn btn-danger" onclick="uncheckAll()">
+                    Uncheck All
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row gx-3 gy-3 mb-3" id="grid" data-masonry='{"percentPosition": true }'>
+    {% set ns = namespace(count=0) %}
+    {% for crate, items in sortedItems.items() %}
+
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner text-start">
+                    <span class="mc-white mc-bold">{{ crate }}</span>
+                    <div><br></div>
+                    {% for item in items %}
+                    <div id="Item-{{ item['id'] }}">
+                        <input type="checkbox" name="item" onclick="exportCode()">
+                        <label><span class="mc-gold">{{ item["Name"] | safe }}</span></label>
+                    </div>
+                    {% set ns.count = ns.count + 1 %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="row gx-3 gy-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner text-start">
+                    <div class="mc-bold mc-gold">Missing Items: </div>
+                    <br>
+                    <div id="resList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let checkedItems = {
+        {% for crate, items in sortedItems.items() %}
+        {% for item in items %}
+        {{ item.id }} : false,
+        {%endfor%}
+        {% endfor %}
+    }
+
+    let sortedItems = {{sortedItems | safe }}
+
+    
+
+    function updateShownItems() {
+        tagSelect = document.getElementById("tagSelection")
+        console.log(tagSelect.value)
+        for (let crateName in sortedItems) {
+            for (let item in sortedItems[crateName]) {
+                if (tagSelect.value == "") {
+                    doesItemHaveTag = true
+                } else {
+                    doesItemHaveTag = sortedItems[crateName][item]["Tags"].includes(tagSelect.value)
+                }
+                itemDiv = document.getElementById(`Item-${sortedItems[crateName][item]["id"]}`)
+                missingDiv = document.getElementById(`Missing-${sortedItems[crateName][item]["id"]}`)
+                if (doesItemHaveTag == false) {
+                    itemDiv.classList.add('d-none')
+                    if (missingDiv) {
+                        missingDiv.classList.add('d-none')
+                    }
+                } else {
+                    itemDiv.classList.remove('d-none')
+                    if (missingDiv) {
+                        missingDiv.classList.remove('d-none')
+                    }
+                }
+            }
+        }
+        var grid = document.getElementById("grid")
+        var msnry = new Masonry(grid, {percentPosition: true})
+        msnry.reloadItems()
+    }
+
+    window.onload = function () {
+        importCode()
+        updateMissingItemList();
+    }
+
+    function updateMissingItemList() {
+        let checkboxes = document.getElementsByName('item')
+        let missingItems = document.getElementById("resList")
+        missingItems.replaceChildren() // empty missing items list
+
+        for (var i=0;i<checkboxes.length;i++) {
+            if (checkboxes[i].checked) { } else {
+                let crateName = checkboxes[i].parentElement.parentElement.children[0].textContent
+                let crateResDiv = document.getElementById(crateName)
+                if (crateResDiv) { } else {
+                    let crateResDiv = document.createElement("div")
+                    crateResDiv.id = crateName
+                    crateResDiv.innerHTML = `<br><div class='mc-gold'>- ${crateName}</div>`
+                    missingItems.appendChild(crateResDiv)
+                }
+                let temp = checkboxes[i].parentElement.children[1].children[0].cloneNode(true)
+                let emptyDiv = document.createElement("div")
+                let itemId = checkboxes[i].parentElement.id.replace("Item-", "")
+                emptyDiv.id = `Missing-${itemId}`
+                temp.prepend("  - ")
+                temp.style.whiteSpace = "pre-wrap"
+                emptyDiv.appendChild(temp)
+                missingItems.appendChild(emptyDiv);
+            }
+        }
+    }
+    
+    function exportCode() {
+        let checkboxes = document.getElementsByName('item');
+        actuallyCheckedItems = []
+        let result = ""
+        for (var i = 0; i < checkboxes.length; i++) {
+            let itemId = checkboxes[i].parentElement.id.replace("Item-", "")
+            if (checkboxes[i].checked) {
+                actuallyCheckedItems.push(Number(itemId))
+                checkedItems[itemId] = 1
+                result += 1;
+            } else {
+                checkedItems[itemId] = 0
+                result += 0;
+            }
+        }
+        updateMissingItemList();
+        document.getElementById("importCode").value = JSON.stringify(actuallyCheckedItems);
+    }
+    function importCode() {
+        let currentValues = JSON.parse(document.getElementById("importCode").value);
+        let checkboxes = document.getElementsByName('item');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = false
+        }
+        for (const itemId of currentValues) {
+            checkbox = document.getElementById(`Item-${itemId}`).children[0]
+            checkbox.checked = true
+        }
+        /*for (let itemID in currentValues) {
+            checkbox = document.getElementById(`Item-${itemID}`).children[0]
+            if (currentValues[itemID] == 1) {
+                checkbox.checked = true
+            } else {
+                checkbox.checked = false
+            }
+        }*/
+        updateMissingItemList()
+    }
+    function checkAll() {
+        let checkboxes = document.getElementsByName('item');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = true;
+        }
+        exportCode()
+    }
+
+    function uncheckAll() {
+        let checkboxes = document.getElementsByName('item');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = false;
+        }
+        exportCode()
+    }
+
+    function copyToClipBoard() {
+        var copyText = document.getElementById("importCode");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        alert("Copied import code to clipboard.")
+    }
+</script>
+
+{% endblock %}

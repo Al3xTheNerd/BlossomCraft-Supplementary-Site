@@ -1,0 +1,138 @@
+{% set Title = "Manage Misc. " ~ name ~ " Order" %}
+{% set UseSEO = false %}
+{% set Description = "Manage the order that Miscellaneous Items appear in." %}
+{% set UseTracker = false %}
+{% extends "MiscellaneousItemList/IntegratedLayout.html" %}
+{% block styles %}
+<style>
+    .gu-mirror {
+        position: fixed !important;
+        margin: 0 !important;
+        z-index: 9999 !important;
+        opacity: 0.8;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+        filter: alpha(opacity=80);
+    }
+
+    .gu-hide {
+        display: none !important;
+    }
+
+    .gu-unselectable {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+    }
+
+
+    tr.gu-transit td {
+        background-color: black;
+    }
+
+    tr.gu-mirror td {
+        background-color: white;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Miscellaneous {{name}} Order</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to change the order of the {{name}} list. This
+                    is mostly used when you need to add another plushie you found after you moved on to the next group, and want to put them
+                    together nicely in the list.</li>
+                <li class="list-group-item mc-gold bg-dark">To reorder the {{name}}: Drag and drop the rows within the
+                    table below, when you have them in your preferred order go ahead and click
+                    <code>Update {{name}} Order</code> at the top.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    <div class="col-12 bg-dark text-info rounded">
+        <form method="post" action="">
+            <input type='text' name="ItemOrder" id="ItemOrder" hidden>
+            <button class="btn btn-primary mb-1" type="submit">Update {{name}} Order!</button>
+        </form>
+    </div>
+    <div class="col-12">
+        <div class="text-info">
+            <div class="d-flex align-items-start">
+                <div class="text-info w-100">
+                    <table class="table table-dark extra-pad-top w-100 rounded">
+                        <thead>
+                            <tr>
+                                <th scope="col">id</th>
+                                <th scope="col">{{name}} Name</th>
+                                {% if name == "Item" %}
+                                <th scope="col">Bot Item Name</th>
+                                <th scope="col">Group ID</th>
+                                {% elif name == "Group" %}
+                                <th scope="col">Tag</th>
+                                <th scope="col">Release Date</th>
+                                {% endif%}
+                                <th scope="col">Order</th>
+                            </tr>
+                        </thead>
+                        <tbody class='sortableItems' id="sortableItems">
+                            {% for item in currentItems %}
+                            <tr>
+                                {% if name == "Item" %}
+                                <td scope="col"><span id='id'>{{item.id}}</span></td>
+                                <td scope="col">{{item.ItemNameHTML | safe}}</td>
+                                <td scope="col">{{item.ItemName}}</td>
+                                <td scope="col">{{item.GroupID}}</td>
+                                <td scope="col"><span id='io'>{{item.ItemOrder}}</span></td>
+                                {% elif name == "Group" %}
+                                <td scope="col"><span id='id'>{{item.id}}</span></td>
+                                <td scope="col">{{item.GroupName}}</td>
+                                <td scope="col">{{item.URLTag}}</td>
+                                <td scope="col">{{item.ReleaseDate}}</td>
+                                
+                                <td scope="col"><span id='io'>{{item.GroupOrder}}</span></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/dragula@3.7.2/dist/dragula.min.js"></script>
+<script>
+    function createMap(rows) {
+        const newMap = new Map();
+        for (const row of rows) {
+            let rowID = row.querySelector("#id").textContent;
+            let rowOrder = row.querySelector("#io").textContent;
+            newMap.set(rowID, rowOrder);
+        }
+        let jsonString = JSON.stringify(Object.fromEntries(newMap));
+        document.getElementById('ItemOrder').value = jsonString;
+    }
+    var container = document.getElementById('sortableItems');
+    var rows = container.children;
+    createMap(rows);
+    var nodeListForEach = function (array, callback, scope) {
+        for (var i = 0; i < array.length; i++) {
+            callback.call(scope, i, array[i]);
+        }
+    };
+    var sortableTable = dragula([container]);
+    sortableTable.on('dragend', function () {
+        nodeListForEach(rows, function (index, row) {
+            row.lastElementChild.innerHTML = `<span id='io'>${index + 1}</span>`;
+            row.dataset.rowPosition = index + 1;
+        });
+        createMap(rows)
+    });
+
+</script>
+{% endblock %}

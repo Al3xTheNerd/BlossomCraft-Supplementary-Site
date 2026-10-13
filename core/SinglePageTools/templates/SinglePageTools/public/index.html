@@ -1,0 +1,106 @@
+{% set Title = "Single Page Tools" %}
+{% set UseSEO = true %}
+{% set Description = "A list of small tools to assist on the server." %}
+{% set UseTracker = true %}
+{% extends "SinglePageTools/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h2 class="card-title">Single Page Tools</h2>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">These tools are just some small single page tools made to
+                    help you with various things from item management, to job planning.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("SinglePageTools.JobsPayouts")}}'>Jobs Pay Calculator</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This calculator lets you see many things relating to jobs,
+                    ranging from how many actions you need to get to a goal level, to just the simple things like how
+                    much xp or cash do you get per action at any given level.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("SinglePageTools.BlockSpeed")}}'>Block Break Speed
+                        Calculator</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This calculator checks how fast you can break a block, based
+                    on which custom itme you're using and what extra effects you have.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("SinglePageTools.ItemTrackerRoute")}}'>Item Tracker</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This tool will give you a list of every item on the server,
+                    and you can use this to check off which items you already have, at the bottom of the screen it will
+                    give you a list of missing items that you can copy/paste directly into Discord for a nicely
+                    formatted list.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("SinglePageTools.MiscItemTracker")}}'>Misc. Item Tracker</a>
+                </h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This tool will give you a list of every miscellaneous item
+                    on the server,
+                    and you can use this to check off which items you already have, at the bottom of the screen it will
+                    give you a list of missing items that you can copy/paste directly into Discord for a nicely
+                    formatted list.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("SinglePageTools.InventoryPlanner")}}'>Inventory Planner</a>
+                </h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">You can use this tool to plan out which items you would like
+                    to use in your inventory, then copy the code to share with others and show off you're beautiful
+                    loadout.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("SinglePageTools.GradientMaker")}}'>Gradient Maker</a>
+                </h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This tool helps you generate a simple gradient to use for prefixes, rename, or nicknames!</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title"><a href='{{url_for("SinglePageTools.Gambling")}}'>Gambling</a></h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Are you perhaps a broke, penniless individual but want to gamble anyways? Use this page to live out your wildest dreams and gamble 1k keys at a time, you're still gonna pull all 4% items anyways!</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

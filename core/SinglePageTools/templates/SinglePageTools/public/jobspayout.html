@@ -1,0 +1,178 @@
+{% set Title = "Jobs Pay Calculator" %}
+{% set UseSEO = true %}
+{% set Description = "Calculate how much money you will make at a certain job level, with options for XP or pay bonuses." %}
+{% set UseTracker = true %}
+{% extends "SinglePageTools/IntegratedLayout.html" %}
+{% block content %}
+
+<div class="row gx-3 gy-3">
+    <div class="col-12 bg-dark text-info rounded">
+        <form>
+            <div class="mb-3">
+                <label for="job-level" class="form-label">Current Level (<code>/jobs stats</code>):<span id="job-level-display">1</span></label>
+                <input type="range" class="form-range" min="1" max="101" value="1" id="job-level"
+                    oninput="updateValues()" onchange="updateValues()">
+            </div>
+            <div class="mb-3">
+                <label for="job-bonus" class="form-label">Bonus Pay % (<code>/jobs bonus [Job Name]</code>):<span id="job-bonus-display">0</span>%</label>
+                <input type="range" class="form-range" min="0" max="40" value="0" step="5" id="job-bonus"
+                    oninput="updateValues()" onchange="updateValues()">
+            </div>
+            <div class="mb-3">
+                <label for="job-bonus-xp" class="form-label">Bonus XP % (<code>/jobs bonus [Job Name]</code>):<span id="job-bonus-xp-display">0</span>%</label>
+                <input type="range" class="form-range" min="0" max="75" value="0" step="5" id="job-bonus-xp"
+                    oninput="updateValues()" onchange="updateValues()">
+            </div>
+            
+            <div class="mb-3">
+                <label for="job-goal-level" class="form-label">Goal Level: <span id="job-goal-level-display">1</span></label>
+                <input type="range" class="form-range" min="1" max="101" value="1" id="job-goal-level"
+                    oninput="updateValues()" onchange="updateValues()">
+            </div>
+
+        </form>
+    </div>
+
+    <div class="col-12">
+        <div class="text-info w-100">
+            <ul class="nav nav-tabs bg-dark rounded" id="myTab" role="tablist"
+                style="border-bottom-color: transparent;">
+                {% for JobName in Info.keys() %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded {%if loop.first%}active{%endif%}" id="{{JobName}}-tab"
+                        data-bs-toggle="tab" data-bs-target="#{{JobName}}-tab-pane" type="button" role="tab"
+                        aria-selected="true">{{JobName}}</button>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                {% for JobName in Info.keys() %}
+                <div class="tab-pane fade {%if loop.first%}show active{%endif%}" id="{{JobName}}-tab-pane"
+                    role="tabpanel" tabindex="0">
+                    <span class="d-none" name="secret">{{Secrets[JobName]}}</span>
+                    <span class="d-none" name="goalXP"></span>
+                    <div class="text-info">
+                        <br>
+                        <ul class="nav nav-tabs bg-dark rounded" id="{{JobName}}" role="tablist"
+                            style="border-bottom-color: transparent;">
+                            {% for JobAction in Info[JobName].keys() %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded {% if loop.first %}active{% endif %}"
+                                    id="{{JobName}}-{{JobAction}}-tab" data-bs-toggle="tab"
+                                    data-bs-target="#{{JobName}}-{{JobAction}}-tab-pane" type="button" role="tab"
+                                    aria-selected="true">{{ JobAction }}</button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            {% for JobAction in Info[JobName].keys() %}
+                            <div class="tab-pane fade {% if loop.first %}show active{% endif %}"
+                                id="{{JobName}}-{{JobAction}}-tab-pane" role="tabpanel" tabindex="0">
+                                <br>
+                                <table class="table table-dark table-striped extra-pad-top rounded">
+                                    <thead>
+                                        <tr id="skip">
+                                            <th scope="col">Item/Entity</th>
+                                            <th scope="col">Base Experience</th>
+                                            <th scope="col">Base Pay Rate</th>
+                                            <th scope="col">Buffed XP</th>
+                                            <th scope="col">Current Level Pay Rate</th>
+                                            <th scope="col">Goal Pay Rate</th>
+                                            <th cope="col">Actions Needed for Goal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for JobItemName, JobItemInfo in Info[JobName][JobAction].items() %}
+                                        <tr>
+                                            <th scope='col'>{{JobItemName}}</th>
+                                            <th scope='col'><span id='xp'>{{JobItemInfo['xp']}}</span></th>
+                                            <th scope='col'>$<span id='base'>{{JobItemInfo['basepay']}}</span></td>
+                                            <td scope='col'><span id='buffedxp'>{{JobItemInfo['xp']}}</span></td>
+                                            <td scope='col'>$<span id='final'>{{JobItemInfo['basepay']}}</span></td>
+                                            <td scope='col'>$<span id='goalpay'>{{JobItemInfo['basepay']}}</span></td>
+                                            <td scope='col'><span id='goal'>0</span></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function updateGoalXP(goalLevel, level) {
+        let jobXPGoals = document.getElementsByName("goalXP")
+        for (jobElement of jobXPGoals) {
+            let jobSecret = jobElement.parentNode.childNodes[1]
+
+            var goalXP = 0
+            for (let i=1; i <= goalLevel-1; i++) {
+                goalXP += 50*i+(i*i*jobSecret.textContent)
+            }
+            var totalXPEarned = 0
+            for (let i=1; i <= level-1; i++) {
+                totalXPEarned += 50*i+(i*i*jobSecret.textContent)
+            }
+            goalXP = goalXP-totalXPEarned
+            jobElement.textContent = goalXP
+            
+        }
+    }
+
+    function updateValues() {
+        
+        // Update Level Display
+        var level = document.getElementById("job-level").value;
+        var levelDisplay = document.getElementById("job-level-display");
+        levelDisplay.textContent = level;
+        // Update Bonus Display
+        var bonus = document.getElementById("job-bonus").value;
+        var bonusDisplay = document.getElementById("job-bonus-display");
+        bonusDisplay.textContent = bonus;
+        // Update Bonus XP Display
+        var bonusXP = document.getElementById("job-bonus-xp").value;
+        var bonusDisplay = document.getElementById("job-bonus-xp-display");
+        bonusDisplay.textContent = bonusXP;
+        // Update Goal Level Display
+        var goalLevel = document.getElementById("job-goal-level");
+        var levelDisplay = document.getElementById("job-goal-level-display");
+        updateGoalXP(goalLevel.value, level)
+        if (Number(level) > Number(goalLevel.value)) {
+            goalLevel.value = Number(level)
+        }
+        levelDisplay.textContent = goalLevel.value;
+
+        var rows = document.getElementsByTagName("tr");
+        for (const row of rows) {
+            if (row.id != "skip") {
+                let tempBase = row.querySelector("#base").textContent;
+                tempBase = tempBase * (1 + (bonus / 100));
+                let payout = tempBase + (tempBase * (level - 1) * 0.01);
+                payout = Math.round(payout * 100) / 100
+                let tempFinal = row.querySelector("#final");
+                tempFinal.textContent = payout;
+                
+                let goalPayout = tempBase + (tempBase * (goalLevel.value - 1) * 0.01);
+                goalPayout = Math.round(goalPayout * 100) / 100
+                let tempGoalPay = row.querySelector("#goalpay");
+                tempGoalPay.textContent = goalPayout;
+
+                let tempXP = row.querySelector("#xp").textContent * (1 + (bonusXP / 100));
+                let buffedXP = row.querySelector("#buffedxp")
+                buffedXP.textContent = Math.round(tempXP * 100) / 100
+                
+                let neededForGoal = row.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.childNodes[3].textContent
+                let actionsNeeded = neededForGoal/tempXP
+                let goalOutput = row.querySelector("#goal")
+                goalOutput.textContent = Math.round(actionsNeeded * 100) / 100
+            }
+        }
+    }
+</script>
+{% endblock %}

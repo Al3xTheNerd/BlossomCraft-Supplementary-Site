@@ -1,0 +1,138 @@
+{% set Title = "Item Order" %}
+{% set UseSEO = false %}
+{% set Description = "Manage the order that items appear in the database." %}
+{% set UseTracker = false %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block styles %}
+<style>
+    .gu-mirror {
+        position: fixed !important;
+        margin: 0 !important;
+        z-index: 9999 !important;
+        opacity: 0.8;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+        filter: alpha(opacity=80);
+    }
+
+    .gu-hide {
+        display: none !important;
+    }
+
+    .gu-unselectable {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+    }
+
+
+    tr.gu-transit td {
+        background-color: black;
+    }
+
+    tr.gu-mirror td {
+        background-color: white;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Item Order</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to change the order of the item list. This
+                    is mostly used when you add a level 2/3 item after the rest of the crate, and want to put them
+                    together nicely in the list.</li>
+                <li class="list-group-item mc-gold bg-dark">To reorder the items: Drag and drop the rows within the
+                    table below, when you have them in your preferred order go ahead and click
+                    <code>Update Item Order</code> at the top.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    <div class="col-12 bg-dark text-info rounded">
+        <form method="post" action="">
+            <input type='text' name="ItemOrder" id="ItemOrder" hidden>
+            <button class="btn btn-primary mb-1" type="submit">Update Item Order!</button>
+        </form>
+    </div>
+    <div class="col-12">
+        <div class="text-info">
+            <div class="d-flex align-items-start">
+                <div class="text-info w-100">
+                    <table class="table table-dark extra-pad-top w-100 rounded">
+                        <thead>
+                            <tr>
+                                <th scope="col">id</th>
+                                <th scope="col">Item Name</th>
+                                <th scope="col">Bot Item Name</th>
+                                <th scope="col">Crate ID</th>
+                                <th scope="col">Primary Tag</th>
+                                <th scope="col">Secondary Tag</th>
+                                <th scope="col">Tertiary Tag</th>
+                                <th scope="col">Quaternay Tag</th>
+                                <th scope="col">Quinary Tag</th>
+                                <th scope="col">Senary Tag</th>
+                                <th scope="col">Septenary Tag</th>
+                                <th scope="col">Order</th>
+                            </tr>
+                        </thead>
+                        <tbody class='sortableItems' id="sortableItems">
+                            {% for item in currentItems %}
+                            <tr>
+                                <td scope="col"><span id='id'>{{item.id}}</span></td>
+                                <td scope="col">{{item.ItemNameHTML | safe}}</td>
+                                <td scope="col">{{item.ItemName}}</td>
+                                <td scope="col">{{item.CrateID}}</td>
+                                <td scope="col">{{item.TagPrimary}}</td>
+                                <td scope="col">{{item.TagSecondary}}</td>
+                                <td scope="col">{{item.TagTertiary}}</td>
+                                <td scope="col">{{item.TagQuaternary}}</td>
+                                <td scope="col">{{item.TagQuinary}}</td>
+                                <td scope="col">{{item.TagSenary}}</td>
+                                <td scope="col">{{item.TagSeptenary}}</td>
+                                <td scope="col"><span id='io'>{{item.ItemOrder}}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/dragula@3.7.2/dist/dragula.min.js"></script>
+<script>
+    function createMap(rows) {
+        const newMap = new Map();
+        for (const row of rows) {
+            let rowID = row.querySelector("#id").textContent;
+            let rowOrder = row.querySelector("#io").textContent;
+            newMap.set(rowID, rowOrder);
+        }
+        let jsonString = JSON.stringify(Object.fromEntries(newMap));
+        document.getElementById('ItemOrder').value = jsonString;
+    }
+    var container = document.getElementById('sortableItems');
+    var rows = container.children;
+    createMap(rows);
+    var nodeListForEach = function (array, callback, scope) {
+        for (var i = 0; i < array.length; i++) {
+            callback.call(scope, i, array[i]);
+        }
+    };
+    var sortableTable = dragula([container]);
+    sortableTable.on('dragend', function () {
+        nodeListForEach(rows, function (index, row) {
+            row.lastElementChild.innerHTML = `<span id='io'>${index + 1}</span>`;
+            row.dataset.rowPosition = index + 1;
+        });
+        createMap(rows)
+    });
+
+</script>
+{% endblock %}

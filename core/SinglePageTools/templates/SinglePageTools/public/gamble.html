@@ -1,0 +1,71 @@
+{% set Title = "Gambling" %}
+{% set UseSEO = true %}
+{% set Description = "A simulation of gambling on the server." %}
+{% set UseTracker = true %}
+{% extends "SinglePageTools/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Gambling</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Use the form below to select which crate you would like to gamble, as well as how many rolls you'd like to do. This is purely here for entertainment, and should not be treated as 100% accurate.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-3" data-masonry='{"percentPosition": true }'>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form method="post" action="{{ url_for('SinglePageTools.Gambling') }}">
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="inputGroupSelect01">Crate</label>
+                            <select name='crate' class="form-select" id="inputGroupSelect01">
+                                <option value="all">All</option>
+                                {% for crateID, crateName in Crates.items() %}
+                                {% if crateID == recentCrate | int %}
+                                <option value="{{ crateID }}" selected>{{crateName}}</option>
+                                {% else %}
+                                <option value="{{ crateID }}">{{crateName}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Amount</span>
+                            <input type="text" class="form-control" name="amount" aria-label="Amount to Gamble"
+                                aria-describedby="inputGroup-sizing-default" value="{{amount}}">
+                        </div>
+                        <button class="btn btn-primary mb-1" type="submit">Roll!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for crate, items in stats.items() %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner text-start">
+                    <div class="mc-bold mc-italic mc-gold">{{ crate }}</div>
+                    {% for item in items %}
+                    <div class="mc-dark-green">{{ items[item] }} {{ item | safe }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% include 'itemDisplay.html' %}
+
+</div>
+
+
+
+{% endblock %}

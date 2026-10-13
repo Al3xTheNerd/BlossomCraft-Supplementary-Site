@@ -1,0 +1,70 @@
+{% set Title = "Item: " ~ PrimaryItem.ItemName %}
+{% set UseSEO = true %}
+{% set Description = "View extra details on " ~ PrimaryItem.ItemName %}
+{% set UseTracker = true %}
+{% extends "ItemListing/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer marker" id="{{ PrimaryItem.id }}">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner text-start">
+                    {{ PrimaryItem.ItemHTML | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <form>
+                        {% for name, var in [
+                        ("Crate Name", PrimaryItem.CrateName),
+                        ("Primary Tag", PrimaryItem.TagPrimary),
+                        ("Secondary Tag", PrimaryItem.TagSecondary),
+                        ("Tertiary Tag", PrimaryItem.TagTertiary),
+                        ("Quaternary Tag", PrimaryItem.TagQuaternary),
+                        ("Quinary Tag", PrimaryItem.TagQuinary),
+                        ("Senary Tag", PrimaryItem.TagSenary),
+                        ("Septenary Tag", PrimaryItem.TagSeptenary),
+                        ("Win Percentage", PrimaryItem.WinPercentage),
+                        ("Rarity", PrimaryItem.Rarity),
+                        ("Bot Item Name", PrimaryItem.ItemName)] %}
+                        {% if var %}
+                        <div class="input-group{%if not loop.last%} mb-3{%endif%}">
+                            <span class="input-group-text">{{name}}</span>
+                            <input type="text" placeholder="{{var}}" class="form-control" disabled>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% if PrimaryItem.Notes %}
+                        <div class="form-floating mt-3">
+                            <textarea class="form-control" name='Notes' placeholder="Item Notes" id="NotesGroup"
+                                style="height: 100px" disabled>{{ PrimaryItem.Notes }}</textarea>
+                            <label for="NotesGroup">Notes</label>
+                        </div>
+                        {% endif %}
+                        {% if PrimaryItem.ConnectedItems %}
+                        <div class="form-floating mt-3">
+                            <span class="input-group-text">Connected Items:&nbsp;<a href="{{ url_for('MiscellaneousItemList.SingleGroup', groupTag=PrimaryGroup.URLTag) }}">{{PrimaryGroup.GroupName}}</a></span>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="give-preview-text-outer">
+            <div class="give-preview-text w-100">
+                <div class="give-preview-text-inner">
+                    <img height='108' width='108'
+                        src="{{url_for('static', filename='images/Icons/' ~ PrimaryItem.id ~ '.' ~ PrimaryItem.ImageType)}}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
