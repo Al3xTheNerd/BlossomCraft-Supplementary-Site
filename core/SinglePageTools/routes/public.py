@@ -201,7 +201,6 @@ def Gambling():
     if not amount: amount = 1
     amount = int(amount)
     if platform != "win32" and amount > c.gambleLimit: amount = c.gambleLimit
-    # TODO: Gambling limit should be in the editable configuration.
     crate = request.form.get("crate")
     if not crate or crate == "all":
         crate = "all"

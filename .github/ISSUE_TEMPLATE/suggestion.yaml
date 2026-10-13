@@ -1,0 +1,24 @@
+
+name: "Suggestion"
+description: "Request a new feature!"
+title: "[SUGGESTION]: "
+labels: ["Suggestion"]
+
+body:
+  - type: checkboxes
+    id: existing-issues
+    attributes:
+      label: "Existing Suggestions"
+      description: "Please check existing suggestions before submitting."
+      options:
+        - label: "I have checked the existing suggestions and confirmed this is not a duplicate."
+          required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: "Suggestion"
+      description: "What feature would you like added to the website?"
+      placeholder: "Be as descriptive as you can. The more we know, the more likely we will be able to fulfill your request."
+    validations:
+      required: true
