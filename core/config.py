@@ -4,8 +4,8 @@ server_name: str = "BlossomCraft"
 # What do items get called on this server
 server_item_name: str = "Blossom Items"
 # What rarities exist on this server
-server_rarity_list: List[str] = ["Rare", "Legendary", "Exotic", "Mystic", "Eternal"]
-server_folder_name = "MysticSite"
+server_rarity_list: List[str] = ["Rare", "Legendary", "Mythic", "Immortal", "Exotic"]
+server_folder_name = "BlossomCraft"
 # A tag to include on pages where tracking is enabled
 server_tracker_script: str = '<script data-goatcounter="https://blossomcraft.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
 # Maximum limit for how many items can be rolled at once on the gambling page

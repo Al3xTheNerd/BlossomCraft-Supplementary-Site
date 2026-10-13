@@ -139,8 +139,7 @@ def ManageMiscItem(itemID):
                         if platform == "win32":
                             loc = f"core/_Shared/static/images/Misc_Icons/"
                         else:
-                            loc = f"/home/alexthenerd/{server_folder_name}/core/_Shared/static/images/Misc_Icons/"
-                            # TODO: get this fixed for beaver's hosting
+                            loc = f"/home/blossomcraft/{server_folder_name}/core/_Shared/static/images/Misc_Icons/"
                         
                         db.session.commit()
                         file.save(os.path.join(loc, filename))
