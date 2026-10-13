@@ -139,7 +139,7 @@ def ManageMiscItem(itemID):
                         if platform == "win32":
                             loc = f"core/_Shared/static/images/Misc_Icons/"
                         else:
-                            loc = f"/home/blossomcraft/core/_Shared/static/images/Misc_Icons/"
+                            loc = f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Misc_Icons/"
                         
                         db.session.commit()
                         file.save(os.path.join(loc, filename))
