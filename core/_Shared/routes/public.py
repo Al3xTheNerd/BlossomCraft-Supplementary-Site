@@ -1,6 +1,5 @@
 from flask import render_template, request
 import git
-from core import config as c
 
 from core._Shared import bp
 
@@ -15,7 +14,7 @@ def APIDocs():
 @bp.route('/webhook', methods=['POST'])
 def webhook():
     if request.method == 'POST':
-        repo = git.Repo(f'./{c.server_folder_name}')
+        repo = git.Repo('./')
         origin = repo.remotes.origin
         origin.pull()
         return '', 200
