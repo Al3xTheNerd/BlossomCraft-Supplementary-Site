@@ -34,7 +34,7 @@ class User(UserMixin, db.Model):
         return loads(self.permissionNodes)
         
     def has_permission(self, perm_key) -> bool:
-        if self.permissions == 100:
+        if self.permissions >= 90:
             return True
         if perm_key == None:
             return True

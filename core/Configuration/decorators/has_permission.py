@@ -7,7 +7,7 @@ def has_permission(perm: str):
         @wraps(f)
         @login_required
         def decorated_function(*args, **kwargs):
-            if not current_user.has_permission(perm) and current_user.permissions < 90:
+            if not current_user.has_permission(perm):
                 flash(f"You need <code>Permission: {perm}</code> to view that page.")
                 return redirect(url_for('Configuration.Index'))
             return f(*args, **kwargs)
