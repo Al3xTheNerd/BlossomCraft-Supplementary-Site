@@ -145,26 +145,47 @@ def ManageItem(itemID):
                     uploadLog(current_user, "Item", "icon image uploaded.", itemID)
                     flash("Image saved successfully.")
             else:
-                old = item.to_dict("*")
-                item.CrateID = request.form.get("Crate", item.CrateID)
-                item.TagPrimary = request.form.get("PrimaryTag", item.TagPrimary)
-                item.TagSecondary = request.form.get("SecondaryTag", item.TagSecondary)
-                item.TagTertiary = request.form.get("TertiaryTag", item.TagTertiary)
-                item.TagQuaternary = request.form.get("QuaternaryTag", item.TagQuaternary)
-                item.TagQuinary = request.form.get("QuinaryTag", item.TagQuinary)
-                item.TagSenary = request.form.get("SenaryTag", item.TagSenary)
-                item.TagSeptenary = request.form.get("SeptenaryTag", item.TagSeptenary)
-                item.WinPercentage = request.form.get("WinPercentage", item.WinPercentage)
-                item.Notes = request.form.get("Notes", item.Notes)
-                item.ItemName = request.form.get("ItemName", item.ItemName)
-                item.ConnectedItems = request.form.get("ConnectedItems", item.ConnectedItems)
-                new = item.to_dict("*")
-                db.session.commit()
-                for key in old.keys():
-                    if old[key] != new[key]:
-                        uploadLog(current_user, "Item", f"{item.ItemName} | {key} | '{old[key]}'-->'{new[key]}'.", item.id)
+                if isinstance(item, Item):
+                    old = item.to_dict("*")
+                    item.CrateID = request.form.get("Crate", item.CrateID)
+                    item.TagPrimary = request.form.get("PrimaryTag", item.TagPrimary)
+                    item.TagSecondary = request.form.get("SecondaryTag", item.TagSecondary)
+                    item.TagTertiary = request.form.get("TertiaryTag", item.TagTertiary)
+                    item.TagQuaternary = request.form.get("QuaternaryTag", item.TagQuaternary)
+                    item.TagQuinary = request.form.get("QuinaryTag", item.TagQuinary)
+                    item.TagSenary = request.form.get("SenaryTag", item.TagSenary)
+                    item.TagSeptenary = request.form.get("SeptenaryTag", item.TagSeptenary)
+                    item.WinPercentage = request.form.get("WinPercentage", item.WinPercentage)
+                    item.RarityHuman = request.form.get("Rarity", item.RarityHuman)
+                    item.RarityHTML = request.form.get("RarityHTML", item.RarityHTML)
+                    item.Notes = request.form.get("Notes", item.Notes)
+                    item.ItemName = request.form.get("ItemName", item.ItemName)
+                    item.ItemNameHTML = request.form.get("ItemNameHMTL", item.ItemNameHTML)
                     
-                flash(f"{item.ItemNameHTML} updated successfully!", "dark")
+                    item.RawData = request.form.get("RawData", item.RawData)
+                    item.ItemHuman = request.form.get("HumanData", item.ItemHuman)
+                    item.ItemHTML = request.form.get("HTMLData", item.ItemHTML)
+                    
+                    if request.form.get("Submerged", item.SubmergedMiningSpeedAttribute) == "None":
+                        item.SubmergedMiningSpeedAttribute = None
+                    else:
+                        item.SubmergedMiningSpeedAttribute = float(request.form.get("Submerged", item.SubmergedMiningSpeedAttribute))
+                        
+                    if request.form.get("Efficiency", item.EfficiencyLevel) == "None":
+                        item.EfficiencyLevel = None
+                    else:
+                        item.EfficiencyLevel = int(request.form.get("Efficiency", item.EfficiencyLevel))
+                    
+                    
+                    
+                    item.ConnectedItems = request.form.get("ConnectedItems", item.ConnectedItems)
+                    new = item.to_dict("*")
+                    db.session.commit()
+                    for key in old.keys():
+                        if old[key] != new[key]:
+                            uploadLog(current_user, "Item", f"{item.ItemName} | {key} | '{old[key]}'-->'{new[key]}'.", item.id)
+                        
+                    flash(f"{item.ItemNameHTML} updated successfully!", "dark")
     return render_template("ItemListing/admin/manageItem.html", 
                            item = item,
                            validTags = config.validTags,
