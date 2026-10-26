@@ -11,13 +11,14 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% for loc, name, permission in [
-                    ('Configuration.Index', "Index", none),
-                    ('Configuration.ResetPass', 'Reset Password', none),
-                    ('Configuration.SetBio', "Set Bio", none)
-                    ] %}
-                    {% if current_user.has_permission(permission) %}
-                        <li class="nav-item"><a class="nav-link{% if request.path == url_for(loc) %} active{%endif%}" aria-current="page" href="{{ url_for(loc) }}">{{name}}</a></li>
-                    {% endif %}
+                ('Configuration.Index', "Index", none),
+                ('Configuration.ResetPass', 'Reset Password', none),
+                ('Configuration.SetBio', "Set Bio", none)
+                ] %}
+                {% if current_user.has_permission(permission) %}
+                <li class="nav-item"><a class="nav-link{% if request.path == url_for(loc) %} active{%endif%}"
+                        aria-current="page" href="{{ url_for(loc) }}">{{name}}</a></li>
+                {% endif %}
                 {% endfor %}
             </ul>
         </div>
@@ -35,8 +36,18 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100">
 
                 {% if current_user.permissions >= 90 %}
-                <li class="nav-item"><a class="nav-link{% if request.path == url_for('Configuration.ManageUsers') %} active{%endif%}" aria-current="page" href="{{ url_for('Configuration.ManageUsers') }}">Manage Users</a></li>
+                <li class="nav-item"><a
+                        class="nav-link{% if request.path == url_for('Configuration.ManageUsers') %} active{%endif%}"
+                        aria-current="page" href="{{ url_for('Configuration.ManageUsers') }}">Manage Users</a></li>
                 {% endif %}
+                {% for loc, name, permission in [
+                ('Configuration.ViewQueue', "View Queue", "view_queue")
+                ] %}
+                {% if current_user.has_permission(permission) %}
+                <li class="nav-item"><a class="nav-link{% if request.path == url_for(loc) %} active{%endif%}"
+                        aria-current="page" href="{{ url_for(loc) }}">{{name}}</a></li>
+                {% endif %}
+                {% endfor %}
             </ul>
         </div>
     </div>

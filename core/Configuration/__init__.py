@@ -8,8 +8,7 @@ bp = Blueprint(
 )
 
 RegisteredPermissions = [
-    ("manage_users", "Manage the permissions of other users.")
-    
+    ("view_queue", "View the queue of items from Fabric Mod Uploads")
 ]
 
 from core.Configuration import routes

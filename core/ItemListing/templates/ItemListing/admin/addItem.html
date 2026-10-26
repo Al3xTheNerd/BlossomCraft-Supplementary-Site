@@ -24,7 +24,7 @@
                 <div class="give-preview-text-inner">
                     <form>
                         <div class="">
-                            <textarea class="form-control" id="rawData" rows="20"></textarea>
+                            <textarea class="form-control" id="rawData" rows="20">{%if rawData%}{{rawData}}{%endif%}</textarea>
                         </div>
                     </form>
                 </div>
@@ -550,6 +550,7 @@
         // takeScreenshot()
     }
 
+    UpdatePreview()
 
 
 

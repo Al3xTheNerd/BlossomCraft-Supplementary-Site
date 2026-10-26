@@ -3,14 +3,18 @@ from werkzeug.security import generate_password_hash
 from flask_login import current_user
 from json import loads, dumps
 from typing import Dict
+from sys import platform
 
-from core.Configuration.models import User, Logs
+import os
+
+from core.Configuration.models import User, Logs, Queue
 from core.extensions import db
-from core.Configuration.decorators import permission_level_required
+from core.Configuration.decorators import permission_level_required, has_permission
 from core.Configuration.models import uploadLog
 from core.utils import randomCode
 from core.permissions import RegisteredPermissions
 from core.Configuration import bp
+from atn import apiKey
 
 @bp.route('/admin/resetpass/<userID>', methods=["GET"])
 @permission_level_required(90)
@@ -114,3 +118,44 @@ def viewLogs(logType):
     else:
         flash("Please select a valid log type.")
         return redirect(url_for("_Shared.Index"))
+    
+@bp.route('/admin/addtoqueue', methods=["POST"])
+def AddToQueue():
+    form = request.form.to_dict()
+    if form["apiKey"] == apiKey:
+        newQueueItem = Queue(ItemData = form.get("json"), Extension = form.get("extension").replace(".", "")) # type: ignore
+        db.session.add(newQueueItem)
+        db.session.commit()
+
+        if 'image' in request.files:
+            file = request.files['image']
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            
+            if file and file.filename:
+                filename =  f"{newQueueItem.id}{form.get("extension")}"
+                if filename:
+                    if platform == "win32":
+                        loc = f"core/_Shared/static/images/Queue/"
+                    else:
+                        loc = f"/home/blossomcraft/MysticMC/core/_Shared/static/images/Queue/"
+                    
+                    db.session.commit()
+                    file.save(os.path.join(loc, filename))
+    return ""
+
+@bp.route("/admin/viewqueue")
+@has_permission("view_queue")
+def ViewQueue():
+    queue = Queue.query.all()
+    return render_template("Configuration/admin/viewQueue.html", queue=queue)
+
+@bp.route("/admin/deleteFromQueue/<queueID>")
+@has_permission("view_queue")
+def DeleteFromQueue(queueID):
+    item: Queue | None = Queue.query.filter(Queue.id == queueID).first()
+    db.session.delete(item)
+    db.session.commit()
+    flash("Item deleted from Queue.")
+    return redirect(url_for("Configuration.ViewQueue"))

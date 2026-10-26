@@ -15,3 +15,6 @@ database.db
 
 /core/_Shared/static/images/Misc_Icons/**
 !/core/_Shared/static/images/Misc_Icons/.gitkeep
+
+/core/_Shared/static/images/Queue/**
+!/core/_Shared/static/images/Queue/.gitkeep
