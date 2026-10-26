@@ -1,0 +1,58 @@
+{% set Title = "Uploaded Queue" %}
+{% set UseSEO = false %}
+{% set Description = "Manage the Items added to the Queue through the Fabric Mod." %}
+{% set UseTracker = false %}
+{% extends "Configuration/IntegratedLayout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Item Queue</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to manage items that are added to the queue through the Fabric Mod. They can be added as a normal Item, a Misc. Item, or deleted from the Queue altogether.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3">
+    <div class="col-12">
+        <div class="text-info">
+            <div class="d-flex align-items-start">
+                <div class="text-info w-100">
+                    <table class="table table-dark extra-pad-top w-100 rounded">
+                        <thead>
+                            <tr>
+                                <th scope="col">Icon</th>
+                                <th scope="col">Add to Items List</th>
+                                <th scope="col">Add to Misc Items List</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in queue %}
+                            <tr>
+                                <td scope="col">
+                                    <img height='108' width='108'
+                                        src="{{url_for('static', filename='images/Queue/' ~ item.id ~ '.' ~ item.Extension)}}">
+                                </td>
+                                <td scope="col">
+                                    <a href="{{url_for('ItemListing.AddItem', queueID = item.id)}}">Normal Item</a>
+                                </td>
+                                <td scope="col">
+                                    <a href="{{url_for('MiscellaneousItemList.AddMiscItem', queueID = item.id)}}">Misc. Item</a>
+                                </td>
+                                <td scope="col">
+                                    <a href="{{url_for('Configuration.DeleteFromQueue', queueID = item.id)}}">Delete Item</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

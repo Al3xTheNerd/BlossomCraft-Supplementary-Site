@@ -6,21 +6,28 @@ import json, os
 from flask_login import current_user
 from typing import List
 from sys import platform
+from pathlib import Path
 
 from core.ItemListing import bp
 from core.utils import intParser
 from core.Configuration.decorators import has_permission
-from core.Configuration.models import uploadLog
+from core.Configuration.models import uploadLog, Queue
 from core.ItemListing.models import Crate, Item, Set
 from core.ItemListing.utils import verifyCrate, currentItemsByCrate, currentCrateData
 from core.MiscellaneousItemList.models import MiscellaneousGroup
 from core.extensions import db
 
 
-@bp.route('/admin/additem', methods=['POST', 'GET']) # type: ignore
+
+@bp.route('/admin/additem', methods=['POST', 'GET'])
+@bp.route('/admin/additem/<queueID>', methods=['POST', 'GET'])
 @has_permission("view_add_item")
-def AddItem():
+def AddItem(queueID = None):
     formattedCrates = currentCrateData()
+    rawData = None
+    if queueID:
+        queue: Queue = Queue.query.filter(Queue.id == queueID).one()
+        rawData = queue.ItemData
     if request.method == 'POST':
         form = request.form.to_dict()
         newItem = Item()
@@ -62,12 +69,28 @@ def AddItem():
             db.session.add(newItem)
             db.session.commit()
             uploadLog(current_user, "Item", f"{newItem.ItemName} added to db.", newItem.ItemOrder)
+            
+            if queueID:
+                queue: Queue = Queue.query.filter(Queue.id == queueID).one()
+                if platform == "win32":
+                    oldLoc = Path(f"core/_Shared/static/images/Queue/{queue.id}.{queue.Extension}")
+                    newLoc = Path(f"core/_Shared/static/images/Icons/{newItem.id}.{queue.Extension}")
+                else:
+                    oldLoc = Path(f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Queue/{queue.id}.{queue.Extension}")
+                    newLoc = Path(f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Icons/{newItem.id}.{queue.Extension}")
+                newItem.ImageType = queue.Extension
+                db.session.delete(queue)
+                oldLoc.rename(newLoc)
+                db.session.commit()
+            
             flash(f"{newItem.ItemNameHTML} added to {formattedCrates[int(newItem.CrateID)]['CrateName']} ({Item.query.filter(Item.CrateID == newItem.CrateID).count()})", "dark") # type: ignore
+            if queueID: return redirect(url_for("Configuration.ViewQueue"))
         except Exception as e:
             flash(f"Someting went wrong ({e})", "dark")
     return render_template("ItemListing/admin/addItem.html", 
                            validTags = config.validTags,
-                           currentCrates = formattedCrates)
+                           currentCrates = formattedCrates,
+                           rawData = rawData)
 
 @bp.route('/admin/itemlist', methods=['POST', 'GET']) # type: ignore
 @has_permission("view_item_list")
