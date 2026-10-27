@@ -4,6 +4,7 @@ from flask_login import current_user
 from json import loads, dumps
 from typing import Dict
 from sys import platform
+from pathlib import Path
 
 import os
 
@@ -139,7 +140,7 @@ def AddToQueue():
                     if platform == "win32":
                         loc = f"core/_Shared/static/images/Queue/"
                     else:
-                        loc = f"/home/blossomcraft/MysticMC/core/_Shared/static/images/Queue/"
+                        loc = f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Queue/"
                     
                     db.session.commit()
                     file.save(os.path.join(loc, filename))
@@ -155,7 +156,15 @@ def ViewQueue():
 @has_permission("view_queue")
 def DeleteFromQueue(queueID):
     item: Queue | None = Queue.query.filter(Queue.id == queueID).first()
-    db.session.delete(item)
-    db.session.commit()
-    flash("Item deleted from Queue.")
+    if isinstance(item, Queue):
+        if platform == "win32":
+            loc = Path(f"core/_Shared/static/images/Queue/{item.id}.{item.Extension}")
+        else:
+            loc = Path(f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Queue/{item.id}.{item.Extension}")
+        loc.unlink(missing_ok=True)
+        db.session.delete(item)
+        db.session.commit()
+        flash("Item deleted from Queue.")
+    else:
+        flash("Item does not exist in Queue.")
     return redirect(url_for("Configuration.ViewQueue"))

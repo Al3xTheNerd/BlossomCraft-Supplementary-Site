@@ -183,7 +183,7 @@ def ManageItem(itemID):
                     item.RarityHTML = request.form.get("RarityHTML", item.RarityHTML)
                     item.Notes = request.form.get("Notes", item.Notes)
                     item.ItemName = request.form.get("ItemName", item.ItemName)
-                    item.ItemNameHTML = request.form.get("ItemNameHMTL", item.ItemNameHTML)
+                    item.ItemNameHTML = request.form.get("ItemNameHTML", item.ItemNameHTML)
                     
                     item.RawData = request.form.get("RawData", item.RawData)
                     item.ItemHuman = request.form.get("HumanData", item.ItemHuman)
