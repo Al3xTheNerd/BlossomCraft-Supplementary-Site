@@ -418,6 +418,19 @@
 {% block scripts %}
 {% if current_user.has_permission("edit_item_raw") %}
 <script>
+
+
+    function setValueIfEmpty(elementId, newValue) {
+        const element = document.getElementById(elementId);
+
+        if (!element || element.disabled) return;
+        if (newValue === null || newValue === undefined) return;
+
+        if (element.value.trim() === "") {
+            element.value = newValue;
+        }
+    }
+
     var rawDataTextarea = document.getElementById("rawData");
     if (rawDataTextarea.addEventListener) {
         rawDataTextarea.addEventListener('input', function () {
@@ -426,21 +439,21 @@
     }
     const validTags = {{ validTags | tojson }};
 
-        function formatJSON() {
-            
-            try {
-                // 1. Parse the string into a JavaScript Object
-                const jsonObject = JSON.parse(rawDataTextarea.value);
-                
-                // 2. Stringify it back with 4 spaces of indentation
-                const indentedJSON = JSON.stringify(jsonObject, null, 4);
-                
-                // 3. Update the textarea value
-                rawDataTextarea.value = indentedJSON;
-            } catch (error) {
-                alert("Invalid JSON! Please check your syntax.");
-            }
+    function formatJSON() {
+
+        try {
+            // 1. Parse the string into a JavaScript Object
+            const jsonObject = JSON.parse(rawDataTextarea.value);
+
+            // 2. Stringify it back with 4 spaces of indentation
+            const indentedJSON = JSON.stringify(jsonObject, null, 4);
+
+            // 3. Update the textarea value
+            rawDataTextarea.value = indentedJSON;
+        } catch (error) {
+            alert("Invalid JSON! Please check your syntax.");
         }
+    }
 
 
     /* Converts the silly minecraft types to my own more easily usable ones. */
@@ -780,12 +793,13 @@
 
         // Update HTML elements
         document.getElementById("itemPreview").innerHTML = finalHTML;
-        if (finalItemType) document.getElementById('PrimaryTagGroup').value = finalItemType;
-        document.getElementById('WinPercentageGroup').value = WinPercentage;
-        document.getElementById('RarityGroup').value = RarityHuman;
-        document.getElementById('RarityHTMLGroup').value = RarityHTML;
-        document.getElementById('ItemNameGroup').value = finalItemNameHuman;
-        document.getElementById('ItemNameHTMLGroup').value = finalItemNameHTML;
+        setValueIfEmpty("PrimaryTagGroup", finalItemType);
+        setValueIfEmpty("WinPercentageGroup", WinPercentage);
+        setValueIfEmpty("RarityGroup", RarityHuman);
+        setValueIfEmpty("RarityHTMLGroup", RarityHTML);
+        setValueIfEmpty("ItemNameGroup", finalItemNameHuman);
+        setValueIfEmpty("ItemNameHTMLGroup", finalItemNameHTML);
+
         document.getElementById('RawData').value = JSON.stringify(rawData);
         document.getElementById('HumanData').value = finalHuman;
         document.getElementById('HTMLData').value = finalHTML;

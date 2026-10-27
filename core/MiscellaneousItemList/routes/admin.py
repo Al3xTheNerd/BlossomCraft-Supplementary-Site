@@ -51,8 +51,8 @@ def AddMiscItem(queueID = None):
                     oldLoc = Path(f"core/_Shared/static/images/Queue/{queue.id}.{queue.Extension}")
                     newLoc = Path(f"core/_Shared/static/images/Misc_Icons/{newItem.id}.{queue.Extension}")
                 else:
-                    oldLoc = Path(f"/home/blossomcraft/MysticMC/core/_Shared/static/images/Queue/{queue.id}.{queue.Extension}")
-                    newLoc = Path(f"/home/blossomcraft/MysticMC/core/_Shared/static/images/Misc_Icons/{newItem.id}.{queue.Extension}")
+                    oldLoc = Path(f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Queue/{queue.id}.{queue.Extension}")
+                    newLoc = Path(f"/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Misc_Icons/{newItem.id}.{queue.Extension}")
                 newItem.ImageType = queue.Extension
                 db.session.delete(queue)
                 oldLoc.rename(newLoc)
