@@ -178,15 +178,15 @@ def MaxAPI():
     return jsonify(itemID)
 
 from datetime import datetime
-@app.route('/api/vote/set/<server>/<amount>') # type: ignore
-def setVote(server: str, amount: int):
+@app.route('/api/vote/set/<server>/<amount>/<lastupdated>') # type: ignore 
+def setVote(server: str, amount: int, lastupdated: int):
     obj: Votes | None = Votes.query.filter_by(ServerName = server).first() # type: ignore
-    
+
     if obj:
         obj.Amount = amount
-        obj.LastUpdated = str(datetime.now())
+        obj.LastUpdated = lastupdated
     else:
-        obj = Votes(ServerName = server, Amount = amount, LastUpdated = str(datetime.now())) # type: ignore
+        obj = Votes(ServerName = server, Amount = amount, LastUpdated = lastupdated) # type: ignore
         db.session.add(obj)
     db.session.commit()
     return jsonify(True)

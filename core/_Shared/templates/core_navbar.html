@@ -14,7 +14,8 @@
                     {% for loc, name, path in [
                         ('ItemListing.Index', "Item List", "/items"),
                         ('MiscellaneousItemList.Index', "Misc. Item List", "/miscitems"),
-                        ('SinglePageTools.Index', "Single Page Tools", "/tools")
+                        ('SinglePageTools.Index', "Single Page Tools", "/tools"),
+                        ('Votes.Index', "Vote Count", "/votes")
                         ] %}
                     {% if request.path.startswith(path) %}
                     <li class="nav-item"><a class="nav-link active" aria-current="page"
