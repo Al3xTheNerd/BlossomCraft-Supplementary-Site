@@ -1,0 +1,81 @@
+{% set Title = "Vote Counts" %}
+{% set UseSEO = true %}
+{% set Description = "Current vote counts for each server on " ~ ServerName ~"." %}
+{% set UseTracker = true %}
+{% extends "core_layout.html" %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h2 class="card-title">{{ ServerName }} Vote Counts</h2>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">The counts shown below are provided thanks to Zodancy's BlossomSuite mod, found on <a href="https://www.curseforge.com/minecraft/mc-mods/blossomsuite">CurseForge</a> and <a href="https://modrinth.com/mod/blossomsuite">Modrinth</a>! To help contribute to this counter, use <code>/bsuite options</code>, navigate to the <code>Vote</code> tab, and make sure <code>Send Vote Data</code> is set to <code>ON</code>!</li>
+            </ul>
+        </div>
+    </div>
+    {% for server in voteData %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{ server.ServerName }}</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">Count: {{ server.Amount }}/150</li>
+                <li class="list-group-item mc-gold bg-dark">Last Updated: <span id="{{server.ServerName}}-timer"></span></li>
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function getRelativeTime(unixTimestampInSeconds) {
+  const now = Date.now();
+  const targetTime = unixTimestampInSeconds * 1000;
+  const diffInSeconds = Math.floor((targetTime - now) / 1000);
+
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+  const thresholds = [
+    { unit: 'year', seconds: 31536000 },
+    { unit: 'month', seconds: 2592000 },
+    { unit: 'day', seconds: 86400 },
+    { unit: 'hour', seconds: 3600 },
+    { unit: 'minute', seconds: 60 },
+    { unit: 'second', seconds: 1 },
+  ];
+
+  for (const { unit, seconds } of thresholds) {
+    const interval = Math.trunc(diffInSeconds / seconds);
+    if (Math.abs(interval) >= 1) {
+      return rtf.format(interval, unit);
+    }
+  }
+
+  return rtf.format(0, 'second');
+}
+
+// Live update function for a DOM element
+function liveUpdateRelativeTime(elementId, unixTimestampInSeconds) {
+  const update = () => {
+    const el = document.getElementById(elementId);
+    if (el) {
+      el.textContent = getRelativeTime(unixTimestampInSeconds);
+    }
+  };
+
+  update(); // Initial call
+  return setInterval(update, 1000); // Update every 1 second
+}
+
+// Example usage:
+// <span id="post-time"></span>
+{% for server in voteData %}
+const {{server.ServerName}}ID = liveUpdateRelativeTime('{{server.ServerName}}-timer', {{server.LastUpdated}});
+{% endfor %}
+</script>
+{% endblock %}
