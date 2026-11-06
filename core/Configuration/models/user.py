@@ -8,6 +8,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
+    api_token = db.Column(db.String(128))
     username = db.Column(db.String(1000))
     permissions = db.Column(db.Integer)
     permissionNodes = db.Column(db.String(4000))

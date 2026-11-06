@@ -258,6 +258,22 @@ def ManageGroups():
 
     return render_template("MiscellaneousItemList/admin/manageGroups.html", currentGroups = formattedGroups, validGroupTypes = validMiscGroupTypes)
 
+@bp.route('/admin/fixImages')
+@has_permission("view_misc_missing_images")
+def FixImages():
+    miscItems: List[MiscellaneousItem] = MiscellaneousItem.query.all()
+    icon_dir = Path("core/_Shared/static/images/Misc_Icons" if platform == "win32" else "/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Misc_Icons")
+    miscIconFileList = [p.name for p in icon_dir.iterdir() if p.is_file()] if icon_dir.exists() else []
+
+    for item in miscItems:
+        if f"{item.id}.png" not in miscIconFileList and f"{item.id}.gif" not in miscIconFileList:
+            item.ImageType = None
+        else:
+            item.ImageType = "gif" if f"{item.id}.gif" in miscIconFileList else "png"
+
+    db.session.commit()
+    return redirect(url_for("MiscellaneousItemList.MissingImages"))
+
 @bp.route('/admin/missingimages')
 @has_permission("view_misc_missing_images")
 def MissingImages():

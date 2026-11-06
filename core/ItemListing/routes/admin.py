@@ -418,6 +418,22 @@ def DeleteSet(setID):
         flash(f"Error deleteing #{set.id} - {set.Name}")
     return redirect(url_for("ItemListing.SetManagement"))
 
+@bp.route('/admin/fixImages')
+@has_permission("view_missing_images")
+def FixImages():
+    items: List[Item] = Item.query.order_by(Item.ItemOrder).all()
+    icon_dir = Path("core/_Shared/static/images/Icons" if platform == "win32" else "/home/blossomcraft/BlossomCraft/core/_Shared/static/images/Icons")
+    iconFileList = [p.name for p in icon_dir.iterdir() if p.is_file()] if icon_dir.exists() else []
+
+    for item in items:
+        if f"{item.id}.png" not in iconFileList and f"{item.id}.gif" not in iconFileList:
+            item.ImageType = None
+        else:
+            item.ImageType = "gif" if f"{item.id}.gif" in iconFileList else "png"
+
+    db.session.commit()
+    return redirect(url_for("ItemListing.MissingImages"))
+
 @bp.route('/admin/missingimages')
 @has_permission("view_missing_images")
 def MissingImages():
