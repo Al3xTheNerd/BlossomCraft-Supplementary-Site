@@ -531,14 +531,29 @@ def api_admin_delete_item(authenticated_user, item_id):
 def api_admin_upload_item_icon(authenticated_user, item_id):
     """Multipart/form-data upload endpoint for replacing an item's icon."""
     try:
-        item = Item.query.get(item_id)
+        # Check explicit type query parameter first (?type=misc or ?type=crate)
+        target_type = request.args.get('type', '').lower()
+
+        item = None
         is_misc = False
 
-        if not item:
-            item = MiscellaneousItem.query.get(item_id)
+        if target_type == 'misc':
+            item = MiscellaneousItem.query.filter_by(id=item_id).first()
             is_misc = True
+        elif target_type == 'crate':
+            item = Item.query.filter_by(id=item_id).first()
+            is_misc = False
+        else:
+            # Fallback auto-detection: check MiscellaneousItem first if not specified
+            item = MiscellaneousItem.query.filter_by(id=item_id).first()
+            if item:
+                is_misc = True
+            else:
+                item = Item.query.filter_by(id=item_id).first()
+                is_misc = False
 
         if not item:
+            app.logger.error(f"[AdminApi] Item ID {item_id} not found in database (type={target_type})")
             return jsonify({"success": False, "error": f"Item with ID {item_id} not found"}), 404
 
         if 'image' not in request.files:
@@ -559,23 +574,18 @@ def api_admin_upload_item_icon(authenticated_user, item_id):
         target_path = os.path.join(icon_dir, target_filename)
 
         for old_ext in ('.png', '.gif', '.jpg', '.jpeg', '.webp'):
-            if old_ext != f".{ext}":
-                old_file = os.path.join(icon_dir, f"{item_id}{old_ext}")
-                if os.path.exists(old_file):
-                    try:
-                        os.remove(old_file)
-                    except Exception:
-                        pass
+            old_file = os.path.join(icon_dir, f"{item_id}{old_ext}")
+            if os.path.exists(old_file):
+                try:
+                    os.remove(old_file)
+                except Exception:
+                    pass
 
         file.save(target_path)
         item.ImageType = ext
         db.session.commit()
 
-        try:
-            log_type = "MiscItem" if is_misc else "Item"
-            uploadLog(authenticated_user, log_type, f"Uploaded new icon for item #{item_id}", item_id)
-        except Exception:
-            pass
+        app.logger.info(f"[AdminApi] Saved icon for item #{item_id} to {target_path} (is_misc={is_misc})")
 
         return jsonify({
             "success": True,
@@ -586,7 +596,7 @@ def api_admin_upload_item_icon(authenticated_user, item_id):
 
     except Exception as e:
         db.session.rollback()
-        app.logger.error(f"Failed to upload icon for item {item_id}: {e}")
+        app.logger.error(f"Failed to upload icon for item {item_id}: {e}", exc_info=True)
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -671,6 +681,161 @@ def api_admin_reorder_misc_group_items(authenticated_user, group_id):
         app.logger.error(f"Error reordering items for misc group {group_id}: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
+@app.route('/api/v1/admin/miscgroup', methods=['POST'])
+@api_permission_level_required(90)
+def api_admin_create_miscgroup(authenticated_user):
+    """Creates a new miscellaneous group container."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "Missing JSON payload"}), 400
+
+    group_name = (data.get("GroupName") or "").strip()
+    release_date = (data.get("ReleaseDate") or "").strip()
+    url_tag = (data.get("URLTag") or data.get("GroupTag") or "").strip()
+    group_type = (data.get("GroupType") or "Furniture").strip()
+    notes = (data.get("Notes") or "").strip()
+
+    if not group_name or not release_date or not url_tag:
+        return jsonify({"success": False, "error": "GroupName, ReleaseDate, and URLTag are required"}), 400
+
+    existing = MiscellaneousGroup.query.filter(func.lower(MiscellaneousGroup.URLTag) == url_tag.lower()).first()
+    if existing:
+        return jsonify({"success": False, "error": f"Group Tag '{url_tag}' is already in use"}), 400
+
+    try:
+        new_group = MiscellaneousGroup()
+        new_group.GroupName = group_name
+        new_group.ReleaseDate = release_date
+        new_group.URLTag = url_tag
+        new_group.GroupType = group_type
+        new_group.Notes = notes
+
+        try:
+            new_group.GroupOrder = (db.session.query(func.max(MiscellaneousGroup.GroupOrder)).scalar() or 0) + 1
+        except Exception:
+            new_group.GroupOrder = 1
+
+        db.session.add(new_group)
+        db.session.commit()
+
+        try:
+            uploadLog(authenticated_user, "Group", f"added to db via Fabric mod..", new_group.id)
+        except Exception:
+            pass
+
+        return jsonify({
+            "success": True,
+            "message": f"Group '{group_name}' created successfully.",
+            "group_id": new_group.id
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error creating misc group: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/v1/admin/miscgroup/<int:group_id>', methods=['PATCH'])
+@api_permission_level_required(90)
+def api_admin_update_miscgroup(authenticated_user, group_id):
+    """Updates metadata on an existing miscellaneous group container."""
+    group = MiscellaneousGroup.query.filter_by(id=group_id).first()
+    if not group:
+        return jsonify({"success": False, "error": f"Group #{group_id} not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "Missing JSON payload"}), 400
+
+    new_tag = (data.get("URLTag") or data.get("GroupTag") or "").strip()
+    if new_tag and new_tag.lower() != (group.URLTag or "").lower():
+        existing = MiscellaneousGroup.query.filter(
+            func.lower(MiscellaneousGroup.URLTag) == new_tag.lower(),
+            MiscellaneousGroup.id != group_id
+        ).first()
+        if existing:
+            return jsonify({"success": False, "error": f"Group Tag '{new_tag}' is already in use"}), 400
+
+    try:
+        old_data = group.to_dict(["*"])
+
+        if "GroupName" in data and data["GroupName"].strip():
+            group.GroupName = data["GroupName"].strip()
+        if "ReleaseDate" in data and data["ReleaseDate"].strip():
+            group.ReleaseDate = data["ReleaseDate"].strip()
+        if new_tag:
+            group.URLTag = new_tag
+        if "GroupType" in data and data["GroupType"].strip():
+            group.GroupType = data["GroupType"].strip()
+        if "Notes" in data:
+            group.Notes = data["Notes"].strip()
+
+        new_data = group.to_dict(["*"])
+        db.session.commit()
+
+        for key in old_data.keys():
+            if old_data.get(key) != new_data.get(key):
+                try:
+                    uploadLog(authenticated_user, "Group", f"{key} | '{old_data[key]}'-->'{new_data[key]}'.", group.id)
+                except Exception:
+                    pass
+
+        return jsonify({
+            "success": True,
+            "message": f"Group #{group.id} updated successfully."
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error updating misc group {group_id}: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/api/v1/admin/miscgroup/<int:group_id>', methods=['DELETE'])
+@api_permission_level_required(90)
+def api_admin_delete_miscgroup(authenticated_user, group_id):
+    """Deletes a misc group and all its associated items."""
+    group = MiscellaneousGroup.query.filter_by(id=group_id).first()
+    if not group:
+        return jsonify({"success": False, "error": f"Group #{group_id} not found"}), 404
+
+    group_name = group.GroupName
+    try:
+        items_to_delete = MiscellaneousItem.query.filter(
+            or_(
+                MiscellaneousItem.GroupID == str(group_id),
+                MiscellaneousItem.GroupID == group.GroupName,
+                MiscellaneousItem.GroupID == group.URLTag
+            )
+        ).all()
+
+        MiscellaneousItem.query.filter(
+            or_(
+                MiscellaneousItem.GroupID == str(group_id),
+                MiscellaneousItem.GroupID == group.GroupName,
+                MiscellaneousItem.GroupID == group.URLTag
+            )
+        ).delete(synchronize_session=False)
+
+        db.session.delete(group)
+        db.session.commit()
+
+        try:
+            uploadLog(authenticated_user, "Group", f"{group_name} deleted from db.", None)
+            for it in items_to_delete:
+                uploadLog(authenticated_user, "Misc Item", f"{it.ItemName} deleted from db with {group_name}.", None)
+        except Exception:
+            pass
+
+        return jsonify({
+            "success": True,
+            "message": f"Group #{group_id} ('{group_name}') and {len(items_to_delete)} associated items deleted."
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error deleting misc group {group_id}: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/api/v1/admin/crate', methods=['POST'])
 @api_permission_level_required(90)
