@@ -17,7 +17,6 @@ from sys import platform
 from pathlib import Path
 from core.Configuration.decorators import api_permission_level_required
 from core.Configuration.models.logs import uploadLog
-from atn import server_name, server_folder_name
 
 def get_icon_directory() -> str:
     if platform == "win32":
