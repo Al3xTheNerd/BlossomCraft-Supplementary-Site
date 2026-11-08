@@ -276,8 +276,6 @@ def api_admin_add_item(authenticated_user):
         new_item.GroupID = str(group_id)
         new_item.ItemName = item_name
         new_item.ItemNameHTML = data.get("ItemNameHTML", item_name)
-        new_item.RarityHuman = data.get("RarityHuman", "Common")
-        new_item.RarityHTML = data.get("RarityHTML", "<span>Common</span>")
         new_item.Notes = data.get("Notes", "")
         new_item.RawData = data.get("RawData", "")
         new_item.ItemHuman = data.get("ItemHuman", "")
