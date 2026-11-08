@@ -18,3 +18,12 @@ database.db
 
 /core/_Shared/static/images/Queue/**
 !/core/_Shared/static/images/Queue/.gitkeep
+.idea/
+core/.idea/
+core/_Shared/static/images/BlossomCraft_Icons/
+core/_Shared/static/images/BlossomCraft_Misc_Icons/
+
+.idea/
+core/.idea/
+core/_Shared/static/images/BlossomCraft_Icons/
+core/_Shared/static/images/BlossomCraft_Misc_Icons/

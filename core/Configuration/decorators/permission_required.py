@@ -13,3 +13,35 @@ def permission_level_required(level: int):
             return f(*args, **kwargs)
         return decorated_function
     return decorator
+
+from flask import request, jsonify
+from core.Configuration.models.user import User
+
+def api_permission_level_required(level: int):
+    """Token authentication decorator for Fabric mod REST endpoints."""
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            auth_header = request.headers.get("Authorization")
+            if not auth_header or not auth_header.startswith("Bearer "):
+                return jsonify({"success": False, "error": "Missing or invalid authorization token"}), 401
+
+            token = auth_header.split(" ", 1)[1].strip()
+
+            user = None
+            if hasattr(User, "api_token"):
+                user = User.query.filter_by(api_token=token).first()
+            if not user and hasattr(User, "token"):
+                user = User.query.filter_by(token=token).first()
+            if not user and hasattr(User, "password"):
+                user = User.query.filter_by(password=token).first()
+
+            if not user:
+                return jsonify({"success": False, "error": "Invalid token"}), 401
+
+            if getattr(user, "permissions", 0) < level:
+                return jsonify({"success": False, "error": "Insufficient permissions"}), 403
+
+            return f(user, *args, **kwargs)
+        return decorated_function
+    return decorator
